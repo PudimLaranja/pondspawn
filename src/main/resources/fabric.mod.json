@@ -1,0 +1,56 @@
+{
+	"schemaVersion": 1,
+	"id": "pondspawn",
+	"version": "${version}",
+	"name": "Pondspawn Origin",
+	"description": "Add the Pondspawn origin to the origins mod",
+	"authors": [
+		"PudimLaranja"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/pondspawn/icon.png",
+	"environment": "*",
+
+    "custom": {
+      "cardinal-components": [
+        "pondspawn:tongue"
+      ]
+    },
+
+	"entrypoints": {
+		"main": [
+			"com.origin.pondspawn.PondspawnOrigin"
+		],
+		"client": [
+			"com.origin.pondspawn.PondspawnOriginClient"
+		],
+		"fabric-datagen": [
+			"com.origin.pondspawn.PondspawnOriginDataGenerator"
+		],
+        "cardinal-components-entity": [
+          "com.origin.pondspawn.init.ModComponents"
+        ]
+
+
+    },
+	"mixins": [
+		"pondspawn.mixins.json",
+		{
+			"config": "pondspawn.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.18.1",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

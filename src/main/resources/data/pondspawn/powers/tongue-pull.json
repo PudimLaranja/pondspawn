@@ -1,0 +1,86 @@
+{
+  "type": "origins:multiple",
+
+  "pressed": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 3,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false
+    }
+  },
+
+  "on-press": {
+    "type": "origins:active_self",
+    "entity_action": {
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "apoli:change_resource",
+          "resource": "pondspawn:tongue-release_pressed",
+          "change": 3,
+          "operation": "set"
+        },
+        {
+          "type": "apoli:change_resource",
+          "resource": "pondspawn:tongue-pull_pressed",
+          "change": 3,
+          "operation": "set"
+        }
+      ]
+    },
+    "key": {
+      "key": "key.origins.secondary_active",
+      "continuous": true
+    }
+  },
+
+
+  "not-pressed": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+
+    "entity_action": {
+      "type": "apoli:change_resource",
+      "resource": "pondspawn:tongue-pull_pressed",
+      "change": -1,
+      "operation": "add"
+    },
+
+    "condition": {
+      "type": "apoli:resource",
+      "resource": "pondspawn:tongue-pull_pressed",
+      "comparison": ">",
+      "compare_to": 0
+    }
+  },
+
+
+  "pull":{
+    "type": "active_self",
+
+    "entity_action": {
+      "type": "pondspawn:execute_commands",
+      "commands": [
+        "tongue @s",
+        "changeTongue @s pull"
+      ]
+    },
+
+    "key": {
+      "key": "key.origins.secondary_active",
+      "continuous": false
+    }
+  },
+
+  "name": "Tongue Pull",
+  "description": "If you press secondary instead you will launch your stick tongue and pull yourself towards it, if you are heavier that the entity you are pulling you are pull itself towards you instead.\nYou can also press shift to loose your tongue in this mode",
+  "badges": [
+    {
+      "type": "origins:sprite",
+      "sprite": "minecraft:textures/block/lily_pad.png",
+      "permission_level": 4
+    }
+  ]
+}

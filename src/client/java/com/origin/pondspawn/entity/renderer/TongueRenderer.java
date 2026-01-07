@@ -1,0 +1,227 @@
+package com.origin.pondspawn.entity.renderer;
+
+import com.origin.pondspawn.PondspawnOrigin;
+import com.origin.pondspawn.entity.custum.Tongue;
+import com.origin.pondspawn.entity.ModEntitiesClient;
+import com.origin.pondspawn.entity.enums.TargetTypes;
+import com.origin.pondspawn.entity.model.TongueModel;
+import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.command.argument.Vec2ArgumentType;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.UUID;
+
+
+public class TongueRenderer extends EntityRenderer<Tongue> {
+
+
+
+    public static final Identifier TEXTURE = PondspawnOrigin.id("/textures/entity/tongue.png");
+    private static final Logger log = LoggerFactory.getLogger(TongueRenderer.class);
+
+    private final TongueModel model;
+
+    private Vec3d targetCoordinate = new Vec3d(0,0,0);
+
+    //Options
+
+    private final Vector3f tongueFirstPersonOffset = new Vector3f(0,-0.3f,0.3f);
+
+    //
+    private static Vector3f to_Vector3f(Vec3d vec) {
+        return new Vector3f(
+                (float) vec.x,
+                (float) vec.y,
+                (float) vec.z
+        );
+    }
+
+    private static Vec3d to_Vec3d(Vector3f vec) {
+        return new Vec3d(
+                (double) vec.x,
+                (double) vec.y,
+                (double) vec.z
+        );
+    }
+
+    public TongueRenderer(EntityRendererFactory.Context ctx) {
+        super(ctx);
+
+        this.model = new TongueModel(ctx.getPart(ModEntitiesClient.TONGUE_MODEL_LAYER));
+        this.shadowRadius = 0.0f;
+    }
+
+    private Vec3d getPlayerMouthPosition(PlayerEntity player , float tickDelta) {
+       Vec3d eyePos = player.getLerpedPos(tickDelta).add(
+               0,
+               player.getEyeHeight(player.getPose()) - 0.4,
+               0
+       );
+
+       float headYaw = (float) Math.toRadians(player.getYaw(tickDelta));
+       float headPitch = (float) Math.toRadians(player.getPitch(tickDelta));
+
+       Quaternionf headRotation = new Quaternionf();
+
+       headRotation.rotateY(-headYaw);
+
+        headRotation.rotateX(headPitch);
+
+
+        Vector3f neckOffset = new Vector3f(0f,0.15f,0f);
+        Vector3f mouthOffset = new Vector3f(0f,0f,0.24f);
+
+        neckOffset.rotate(headRotation);
+        mouthOffset.rotate(headRotation);
+
+       return eyePos.add(to_Vec3d(neckOffset)).add(to_Vec3d(mouthOffset));
+    }
+
+    @Override
+    public Identifier getTexture(Tongue entity) {
+        return TEXTURE;
+    }
+
+    @Override
+    public TextRenderer getTextRenderer() {
+        return super.getTextRenderer();
+    }
+
+    private MatrixStack animationHandler(MatrixStack matrices, double distance, float animationControl) {
+
+
+        float offset = (float) distance * (1f - animationControl);
+
+        matrices.translate(0, 0, offset);
+
+
+        matrices.scale(1.0f,1.0f,(float) distance * animationControl);
+
+        return matrices;
+    }
+
+    @Override
+    public void render(Tongue entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+
+        Vec3d entityPos = entity.getPos();
+
+        ClientWorld clientWorld = (ClientWorld) entity.getWorld();
+
+        targetCoordinate = entity.getPos().add(new Vec3d(0.0,1.0,0.0));
+
+
+        if (clientWorld != null) {
+            UUID entityId = entity.getEntityTarget();
+            Entity targetEntity = null;
+
+            TargetTypes mode = entity.getMode();
+
+            if (mode == TargetTypes.PLAYER || mode == TargetTypes.ENTITY)  {
+                    for (Entity currentEntity: clientWorld.getEntities()) {
+                        if(currentEntity.getUuid().equals(entityId)) {
+                            targetEntity = currentEntity;
+                            break;
+                        }
+                    }
+            }
+
+
+
+            if (targetEntity != null) {
+
+                switch (entity.getMode()) {
+                    case DEFAULT -> {
+                        targetCoordinate = entityPos.add(new Vec3d(0,1.0,0));
+                    }
+                    case PLAYER -> {
+                        if (targetEntity instanceof PlayerEntity) {
+                            PlayerEntity player = (PlayerEntity) targetEntity;
+                            MinecraftClient client = MinecraftClient.getInstance();
+                            if (client.player instanceof ClientPlayerEntity clientPlayer) {
+                                if (
+                                    clientPlayer.getUuid() == player.getUuid() &&
+                                    client.options.getPerspective().isFirstPerson()
+                                ) {
+                                    Vec3d mouthPosition = getPlayerMouthPosition(player,tickDelta);
+                                    Vec3d dir = entityPos.subtract(mouthPosition).normalize();
+                                    targetCoordinate = mouthPosition.add(dir.multiply(0.3));
+
+                                    break;
+                                }
+                            }
+                            targetCoordinate = getPlayerMouthPosition(player,tickDelta);
+                        }
+                    }
+                    case ENTITY -> {
+                        targetCoordinate = targetEntity
+                                .getPos().add(new Vec3d(0,1,0));
+                    }
+                    case POSITION -> {
+                        targetCoordinate = entity.positionTarget;
+                    }
+                    default -> throw new IllegalStateException("Unexpected value: " + entity.getMode());
+                }
+            }
+        }
+
+        matrices.push();
+
+        //Vector3f directionToTarget = to_Vector3f(targetCoordinate.subtract(entityPos));
+        Vec3d directionToTarget = targetCoordinate.subtract(entityPos);
+        double distance = directionToTarget.length();
+        directionToTarget.normalize();
+
+        float targetYaw = (float) MathHelper.atan2(directionToTarget.z,directionToTarget.x);
+        targetYaw -= (float) Math.PI / 2.0F;
+
+        double horizontalDistance = Math.sqrt(
+                directionToTarget.x * directionToTarget.x +
+                        directionToTarget.z * directionToTarget.z
+        );
+
+        float targetPitch = (float) MathHelper.atan2(
+                directionToTarget.y,horizontalDistance
+        );
+
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotation(-targetYaw));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotation(-targetPitch));
+
+        float animationControl = entity.getAnimationController();
+
+        matrices = animationHandler(matrices,distance,animationControl);
+
+        //rotation.rotationTo(MODEL_FORWARD_VECTOR,directionToTarget);
+
+        //matrices.multiply(rotation);
+
+//        super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
+        this.model.render(
+                matrices,
+                vertexConsumers.getBuffer(this.model.getLayer(TEXTURE)),
+                255,
+                OverlayTexture.DEFAULT_UV,
+                0xFFFFFFFF
+        );
+
+        matrices.pop();
+    }
+}

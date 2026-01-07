@@ -1,0 +1,16 @@
+{
+  "powers": [
+    "pondspawn:tongue-swing",
+    "pondspawn:tongue-pull",
+    "pondspawn:tongue-release",
+    "pondspawn:tongue-loose"
+  ],
+  "icon": {
+    "id":"minecraft:lily_pad"
+  },
+  "order": 0,
+  "impact": 2,
+  "name": "Pondspawn",
+  "description": "WIP",
+  "unchoosable": false
+}

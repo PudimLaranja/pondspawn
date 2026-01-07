@@ -1,0 +1,43 @@
+{
+  "type": "origins:multiple",
+
+  "pressed": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 3,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false
+    },
+
+    "min_action":{
+      "type": "origins:execute_command",
+      "command": "clearTongue @s"
+    }
+  },
+
+  "not-pressed": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+
+    "entity_action": {
+      "type": "apoli:change_resource",
+      "resource": "pondspawn:tongue-release_pressed",
+      "change": -1,
+      "operation": "add"
+    },
+
+    "condition": {
+      "type": "apoli:resource",
+      "resource": "pondspawn:tongue-release_pressed",
+      "comparison": ">",
+      "compare_to": 0
+    }
+  },
+
+
+
+
+
+  "hidden": true
+}

@@ -1,0 +1,41 @@
+{
+  "type": "origins:multiple",
+
+
+  "on-press": {
+    "type": "origins:active_self",
+    "entity_action": {
+      "type": "apoli:change_resource",
+      "resource": "pondspawn:tongue-release_pressed",
+      "change": 3,
+      "operation": "set"
+    },
+    "key": {
+      "key": "key.origins.primary_active",
+      "continuous": true
+    }
+  },
+
+
+  "launch": {
+    "type": "origins:active_self",
+    "entity_action": {
+          "type": "origins:execute_command",
+          "command": "tongue @s"
+    },
+    "key": {
+      "key": "key.origins.primary_active"
+    }
+  },
+
+
+  "name": "Tongue Swing",
+  "description": "With your viscous tongue you can grab wall, animals and people!!, press and hold primary to launch your tongue and use it like a rope to swing, the tongue will retract once you release primary.\nHold shift to make your tongue loose.",
+  "badges": [
+    {
+      "type": "origins:sprite",
+      "sprite": "minecraft:textures/block/lily_pad.png",
+      "permission_level": 4
+    }
+  ]
+}
