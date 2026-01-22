@@ -6,6 +6,7 @@ import com.origin.pondspawn.PlayerWithTongueData;
 import com.origin.pondspawn.entity.custum.Tongue;
 import com.origin.pondspawn.entity.enums.TongueModes;
 import com.origin.pondspawn.init.ModComponents;
+import com.origin.pondspawn.util.TickScheduler;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
@@ -14,6 +15,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.UUID;
 
@@ -29,15 +31,31 @@ public class ClearTongue {
         }
 
         if (entity instanceof PlayerEntity player) {
-            Tongue tongue = ((PlayerWithTongueData) player).pondspawn$getTongueEntity();
-            if (tongue != null) {
-                tongue.retract(() -> {
-                    ((PlayerWithTongueData) player).pondspawn$setTongueEntity(null);
-                });
-            }
+            killTongue(player);
         }
 
         return 0;
+    }
+
+    public static void killTongue(PlayerEntity player) {
+        Tongue tongue = ((PlayerWithTongueData) player).pondspawn$getTongueEntity();
+        if (tongue != null) {
+            ((PlayerWithTongueData) player).pondspawn$setTarget(null);
+            TickScheduler.schedule(1, () -> applyBoost(player));
+            tongue.retract(() -> {
+                ((PlayerWithTongueData) player).pondspawn$setTongueEntity(null);
+            });
+        }
+    }
+
+    private static void applyBoost(PlayerEntity player) {
+        if (!player.isOnGround()) {
+            double boost = 0.6;
+            Vec3d playerRotationVector = player.getRotationVector();
+            Vec3d dir = new Vec3d(playerRotationVector.x,0.6,playerRotationVector.z).normalize();
+            player.addVelocity(dir.multiply(boost));
+            player.velocityModified = true;
+        }
     }
 
     public static void register() {

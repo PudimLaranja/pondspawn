@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.origin.pondspawn.PondspawnOrigin;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.JsonDataLoader;
@@ -31,8 +32,8 @@ public class WeightManager extends JsonDataLoader implements IdentifiableResourc
         return this.id;
     }
 
-    public static double getWeight(EntityType<?> type) {
-        return WEIGHT_MAP.getOrDefault(type, 1.0d); // Default weight is 1.0
+    public static double getWeight(Entity entity) {
+        return WEIGHT_MAP.getOrDefault(entity.getType(), 1.0d); // Default weight is 1.0
     }
 
     @Override

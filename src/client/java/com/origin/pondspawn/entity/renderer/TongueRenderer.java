@@ -5,7 +5,6 @@ import com.origin.pondspawn.entity.custum.Tongue;
 import com.origin.pondspawn.entity.ModEntitiesClient;
 import com.origin.pondspawn.entity.enums.TargetTypes;
 import com.origin.pondspawn.entity.model.TongueModel;
-import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -15,10 +14,8 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.command.argument.Vec2ArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
@@ -148,37 +145,20 @@ public class TongueRenderer extends EntityRenderer<Tongue> {
 
             if (targetEntity != null) {
 
-                switch (entity.getMode()) {
-                    case DEFAULT -> {
-                        targetCoordinate = entityPos.add(new Vec3d(0,1.0,0));
+                if (targetEntity instanceof PlayerEntity) {
+                    PlayerEntity player = (PlayerEntity) targetEntity;
+                    MinecraftClient client = MinecraftClient.getInstance();
+                    if (
+                        client.player instanceof ClientPlayerEntity clientPlayer &&
+                        clientPlayer.getUuid() == player.getUuid() &&
+                        client.options.getPerspective().isFirstPerson()
+                    ) {
+                        Vec3d mouthPosition = getPlayerMouthPosition(player,tickDelta);
+                        Vec3d dir = entityPos.subtract(mouthPosition).normalize();
+                        targetCoordinate = mouthPosition.add(dir.multiply(0.3));
+                    } else {
+                        targetCoordinate = getPlayerMouthPosition(player,tickDelta);
                     }
-                    case PLAYER -> {
-                        if (targetEntity instanceof PlayerEntity) {
-                            PlayerEntity player = (PlayerEntity) targetEntity;
-                            MinecraftClient client = MinecraftClient.getInstance();
-                            if (client.player instanceof ClientPlayerEntity clientPlayer) {
-                                if (
-                                    clientPlayer.getUuid() == player.getUuid() &&
-                                    client.options.getPerspective().isFirstPerson()
-                                ) {
-                                    Vec3d mouthPosition = getPlayerMouthPosition(player,tickDelta);
-                                    Vec3d dir = entityPos.subtract(mouthPosition).normalize();
-                                    targetCoordinate = mouthPosition.add(dir.multiply(0.3));
-
-                                    break;
-                                }
-                            }
-                            targetCoordinate = getPlayerMouthPosition(player,tickDelta);
-                        }
-                    }
-                    case ENTITY -> {
-                        targetCoordinate = targetEntity
-                                .getPos().add(new Vec3d(0,1,0));
-                    }
-                    case POSITION -> {
-                        targetCoordinate = entity.positionTarget;
-                    }
-                    default -> throw new IllegalStateException("Unexpected value: " + entity.getMode());
                 }
             }
         }

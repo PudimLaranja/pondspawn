@@ -1,12 +1,17 @@
 package com.origin.pondspawn.entity.custum;
 
-import com.origin.pondspawn.PlayerWithTongueData;
+import com.origin.pondspawn.command.ClearTongue;
 import com.origin.pondspawn.entity.enums.TargetTypes;
 import com.origin.pondspawn.entity.enums.TongueModes;
-import com.origin.pondspawn.entity.util.PlayerPhysicsHandler;
-import com.origin.pondspawn.init.ModComponents;
+import com.origin.pondspawn.util.ModUtil;
+import net.minecraft.block.AirBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.CactusBlock;
+import net.minecraft.block.MagmaBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -14,13 +19,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Unique;
+import oshi.util.Util;
 
 import java.util.*;
 
@@ -47,10 +53,10 @@ public class Tongue extends Entity {
     private static final TrackedData<Float> ANIMATION_CONTROLLER = DataTracker
             .registerData(Tongue.class, TrackedDataHandlerRegistry.FLOAT);
 
-    public TargetTypes TargetMode = TargetTypes.DEFAULT;
+    public TargetTypes targetMode = TargetTypes.DEFAULT;
     public UUID FollowEntity;
 
-    public Vec3d positionTarget = new Vec3d(0, 0, 0);
+    public BlockPos blockTarget = new BlockPos(0,0,0);
 
     private static final String DATA_KEY = "data";
     public NbtCompound data = new NbtCompound();
@@ -71,6 +77,7 @@ public class Tongue extends Entity {
     public void retract(Runnable callback) {
         this.onRetractedCallback = callback;
         this.retracting = true;
+
     }
 
     @Override
@@ -105,34 +112,31 @@ public class Tongue extends Entity {
         super.tick();
 
         this.follow_entity();
-        this.distance_kill_handler();
         this.retractHandler();
         this.extendHandler();
+        this.checkBlock();
     }
 
-    private void distance_kill_handler() {
-//        UUID target = this.getEntityTarget();
-//        if (this.getWorld() instanceof ServerWorld world && target != null) {
-//            if (world.getEntity(target) instanceof PlayerEntity player) {
-//                Tongue playerTongue = ((PlayerWithTongueData) player).pondspawn$getTongueEntity();
-//                if (playerTongue != null) {
-//                    if (playerTongue.getUuid() != this.getUuid()) this.kill();
-//                } else {
-//                    this.kill();
-//                }
-//                if (tongueMode == TongueModes.PULL) {
-//                    double dist = player.getPos().add(0,1,0).subtract(this.getPos()).length();
-//                    if (dist < 1.5) {
-//                        ModComponents.TONGUE.get(player).setTongueUuid(null);
-//                        ((PlayerWithTongueData) player).pondspawn$setTongueEntity(null);
-//                        this.kill();
-//                    }
-//                }
-//            } else {
-//                this.kill();
-//            }
-//
-//        }
+    private void checkBlock() {
+        if (this.targetMode == TargetTypes.POSITION && !(this.getAnimationController() < 1.0f)) {
+            if (ModUtil.getEntityByUUID(this.getWorld(), this.getEntityTarget()) instanceof PlayerEntity player) {
+                Block block = this.getWorld().getBlockState(this.blockTarget).getBlock();
+
+                if (block instanceof AirBlock) ClearTongue.killTongue(player);
+
+                DamageSources sources = this.getWorld().getDamageSources();
+
+                if (block instanceof CactusBlock) {
+                    player.damage(sources.cactus(),1.0f);
+                    ClearTongue.killTongue(player);
+                }
+
+                if (block instanceof MagmaBlock) {
+                    player.damage(sources.inFire(),2.0f);
+                    ClearTongue.killTongue(player);
+                }
+            }
+        }
     }
 
     private void retractHandler() {
@@ -165,16 +169,26 @@ public class Tongue extends Entity {
 
     private void follow_entity() {
 
-        if (TargetMode != TargetTypes.ENTITY) {
+        if (targetMode != TargetTypes.ENTITY) {
             return;
         }
 
         if (this.getWorld() instanceof ServerWorld world && FollowEntity != null) {
             Entity entity = world.getEntity(FollowEntity);
-            if (entity == null) return;
-            Vec3d pos = entity.getEyePos();
+            if (entity == null) {
+                if (ModUtil.getEntityByUUID(this.getWorld(), this.getEntityTarget()) instanceof PlayerEntity player) {
+                    ClearTongue.killTongue(player);
+                }
 
-            this.setPosition(pos);
+                return;
+            }
+
+            Vec3d eyePos = entity.getEyePos();
+            Vec3d pos = entity.getPos();
+
+            Vec3d actualPos = pos.lerp(eyePos,0.6);
+
+            this.setPosition(actualPos);
 
         }
     }
@@ -205,11 +219,6 @@ public class Tongue extends Entity {
 
     public float getAnimationController() {
         return this.dataTracker.get(ANIMATION_CONTROLLER);
-    }
-
-    public void setPositionTarget(Vec3d positionTarget) {
-        this.positionTarget = positionTarget;
-
     }
 
     public void setTongueMode(TongueModes tongueMode) {

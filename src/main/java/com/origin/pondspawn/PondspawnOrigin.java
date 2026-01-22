@@ -1,8 +1,10 @@
 package com.origin.pondspawn;
 
 import com.origin.pondspawn.init.*;
+import com.origin.pondspawn.util.TickScheduler;
 import com.origin.pondspawn.weightSystem.WeightManager;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
@@ -27,6 +29,7 @@ public class PondspawnOrigin implements ModInitializer {
 
         ResourceManagerHelper.get(ResourceType.SERVER_DATA)
                 .registerReloadListener(new WeightManager());
+        ServerTickEvents.END_SERVER_TICK.register(TickScheduler::onServerTick);
 
         ModItems.load();
         ModCommands.load();

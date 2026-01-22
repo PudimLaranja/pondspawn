@@ -26,7 +26,7 @@ public class WeightCommand {
         }
 
         if (entity != null) {
-            double weight = WeightManager.getWeight(entity.getType());
+            double weight = WeightManager.getWeight(entity);
 
             if (context.getSource().getEntity() instanceof PlayerEntity player) {
                 player.sendMessage(Text.literal("the entity weighs %f".formatted(weight)));

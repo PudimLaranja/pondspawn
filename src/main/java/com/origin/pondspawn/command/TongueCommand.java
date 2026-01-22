@@ -6,19 +6,17 @@ import com.origin.pondspawn.PlayerWithTongueData;
 import com.origin.pondspawn.entity.custum.Tongue;
 import com.origin.pondspawn.entity.enums.TargetTypes;
 import com.origin.pondspawn.entity.enums.TongueModes;
-import com.origin.pondspawn.init.ModComponents;
 import com.origin.pondspawn.init.ModEntities;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -28,17 +26,17 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
-import java.util.UUID;
-
 
 public class TongueCommand {
 
 
 
-    private static int tongue_logic(CommandContext<ServerCommandSource> context,boolean useCaller,boolean raycast) throws CommandSyntaxException {
+    private static int tongue_logic(CommandContext<ServerCommandSource> context,boolean useCaller,boolean raycast)
+            throws CommandSyntaxException
+    {
 
         var source = context.getSource();
-        source.sendFeedback(() -> Text.literal("called /tongue"), false);
+
         Entity entity;
 
         if (useCaller) {
@@ -47,70 +45,58 @@ public class TongueCommand {
             entity = EntityArgumentType.getEntity(context,"entity");
         }
 
+        assert entity != null;
         World world = entity.getWorld();
 
-        Vec3d position;
+        if (entity instanceof PlayerEntity player) {
+            if (((PlayerWithTongueData) player).pondspawn$getTongueEntity() instanceof Tongue tongue) {
+                if (!tongue.retracting) {
+                    tongue.setTongueMode(TongueModes.LOCK);
+                    return 1;
+                }
 
-        PlayerEntity player;
+                tongue.kill();
+                ((PlayerWithTongueData) player).pondspawn$setTongueEntity(null);
+            }
 
-        if (entity instanceof PlayerEntity playerEntity) {
-            player = playerEntity;
+            Tongue tongueEntity = new Tongue(ModEntities.TONGUE_ENTITY_TYPE, world);
+            Vec3d position;
+            if (raycast) {
+                position = getRaycastPos(player,tongueEntity,world);
+                if (position == Vec3d.ZERO) return 0;
+            } else {
+
+                BlockPos blockPosition = BlockPosArgumentType.getBlockPos(context,"pos");
+
+                position = new Vec3d(
+                        blockPosition.getX(),
+                        blockPosition.getY(),
+                        blockPosition.getZ()
+                );
+            }
+
+            tongueEntity.setLockLength(
+                    position.subtract(player.getEyePos()).length()
+            );
+
+            tongueEntity.setTongueMode(TongueModes.LOCK);
+
+            ((PlayerWithTongueData) player).pondspawn$setTongueEntity(tongueEntity);
+
+            tongueEntity.setEntityTarget(entity.getUuid());
+            tongueEntity.setPosition(position);
+
+            tongueEntity.setMode(TargetTypes.PLAYER);
+
+            tongueEntity.finish();
+
+            world.spawnEntity(tongueEntity);
+
+            return 1;
+
         } else {
             return -1;
         }
-
-        Tongue tongue = ((PlayerWithTongueData) player).pondspawn$getTongueEntity();
-
-        if (tongue != null) {
-            if (tongue.retracting) {
-                tongue.kill();
-                ((PlayerWithTongueData) player).pondspawn$setTongueEntity(null);
-            } else {
-                tongue.setTongueMode(TongueModes.LOCK);
-                return 1;
-            }
-        }
-
-        Tongue tongueEntity = new Tongue(
-                ModEntities.TONGUE_ENTITY_TYPE,
-                world
-        );
-
-        if (raycast) {
-            position = getRaycastPos(player,tongueEntity,world);
-            if (position == Vec3d.ZERO) return 0;
-        } else {
-
-            BlockPos blockPosition = BlockPosArgumentType.getBlockPos(context,"pos");
-
-            position = new Vec3d(
-                    blockPosition.getX(),
-                    blockPosition.getY(),
-                    blockPosition.getZ()
-            );
-
-        }
-
-        tongueEntity.setLockLength(
-                position.subtract(player.getEyePos()).length()
-        );
-
-        tongueEntity.setTongueMode(TongueModes.LOCK);
-
-        ((PlayerWithTongueData) player).pondspawn$setTongueEntity(tongueEntity);
-
-        tongueEntity.setEntityTarget(entity.getUuid());
-        tongueEntity.setPosition(position);
-
-        tongueEntity.setMode(TargetTypes.PLAYER);
-
-
-
-        tongueEntity.finish();
-
-        world.spawnEntity(tongueEntity);
-
-        return 1;
     }
 
     private static Vec3d getRaycastPos(PlayerEntity player,Tongue tongueEntity,World world) {
@@ -128,7 +114,12 @@ public class TongueCommand {
                 startPos,
                 endPos,
                 searchBox,
-                (targetEntity) -> !targetEntity.isSpectator() && targetEntity.isAlive() && targetEntity != player, // Filter: ignore self, spectators
+                (targetEntity) ->
+                        !targetEntity.isSpectator() && targetEntity.isAlive() && targetEntity != player &&
+                            targetEntity instanceof PlayerEntity ||
+                            targetEntity instanceof MobEntity ||
+                            targetEntity instanceof ProjectileEntity
+                , // Filter: ignore self, spectators
                 maxDistance * maxDistance
         );
 
@@ -137,8 +128,10 @@ public class TongueCommand {
             Entity hitEntity = entityHitResult.getEntity();
 
             tongueEntity.FollowEntity = hitEntity.getUuid();
-            tongueEntity.TargetMode = TargetTypes.ENTITY;
-            return hitEntity.getPos();
+            tongueEntity.targetMode = TargetTypes.ENTITY;
+
+            ((PlayerWithTongueData) player).pondspawn$setTarget(hitEntity);
+            return hitEntity.getEyePos();
 
         } else {
             BlockHitResult blockHitResult = world.raycast(new RaycastContext(
@@ -148,8 +141,9 @@ public class TongueCommand {
                     RaycastContext.FluidHandling.NONE,
                     player
             ));
-
             if (blockHitResult.getType() == HitResult.Type.BLOCK) {
+                tongueEntity.blockTarget = blockHitResult.getBlockPos();
+                tongueEntity.targetMode = TargetTypes.POSITION;
                 return blockHitResult.getPos();
             } else {
                 return Vec3d.ZERO;
