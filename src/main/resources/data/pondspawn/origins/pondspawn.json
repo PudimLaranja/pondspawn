@@ -3,7 +3,11 @@
     "pondspawn:tongue-swing",
     "pondspawn:tongue-pull",
     "pondspawn:tongue-release",
-    "pondspawn:tongue-loose"
+    "pondspawn:tongue-loose",
+    "pondspawn:quick-hops",
+    "pondspawn:moisture",
+    "pondspawn:bar-effect",
+    "pondspawn:moisty-skin"
   ],
   "icon": {
     "id":"minecraft:lily_pad"

@@ -1,0 +1,47 @@
+{
+  "type": "origins:multiple",
+
+  "sluggish-walk": {
+    "type": "origins:attribute",
+    "modifier": {
+      "id": "frog-waddle",
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "add_value",
+      "amount": -0.04
+    },
+    "condition": {
+      "type": "origins:nbt",
+      "nbt": "{OnGround:1b}"
+    }
+  },
+
+  "fix-fov-ground": {
+    "type": "origins:modify_fov",
+    "modifier": {
+      "id": "fix-fov",
+      "operation": "multiply_base_multiplicative",
+      "amount": 1.4
+    }
+  },
+
+  "fast-hop": {
+    "type": "origins:modify_air_speed",
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "amount": 1.1
+    }
+  },
+
+  "high-jump": {
+    "type": "origins:modify_jump",
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "amount": 0.4
+    }
+  },
+
+  "name": "quick hops",
+  "description": "as a descendant of frogs your legs are not made for walking so you walk slower when on ground but you walk faster then normal while hoping.\nWhen on ground your speed is reduced to 60% but when on air your speed is increased by 140%"
+
+
+}

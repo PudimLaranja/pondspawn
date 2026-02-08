@@ -130,15 +130,12 @@ public class TongueRenderer extends EntityRenderer<Tongue> {
             UUID entityId = entity.getEntityTarget();
             Entity targetEntity = null;
 
-            TargetTypes mode = entity.getMode();
 
-            if (mode == TargetTypes.PLAYER || mode == TargetTypes.ENTITY)  {
-                    for (Entity currentEntity: clientWorld.getEntities()) {
-                        if(currentEntity.getUuid().equals(entityId)) {
-                            targetEntity = currentEntity;
-                            break;
-                        }
-                    }
+            for (Entity currentEntity: clientWorld.getEntities()) {
+                if(currentEntity.getUuid().equals(entityId)) {
+                    targetEntity = currentEntity;
+                    break;
+                }
             }
 
 
@@ -155,10 +152,13 @@ public class TongueRenderer extends EntityRenderer<Tongue> {
                     ) {
                         Vec3d mouthPosition = getPlayerMouthPosition(player,tickDelta);
                         Vec3d dir = entityPos.subtract(mouthPosition).normalize();
-                        targetCoordinate = mouthPosition.add(dir.multiply(0.3));
+                        targetCoordinate = mouthPosition.add(dir.multiply(0.4));
                     } else {
                         targetCoordinate = getPlayerMouthPosition(player,tickDelta);
                     }
+
+
+
                 }
             }
         }

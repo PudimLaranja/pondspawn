@@ -4,10 +4,8 @@ import com.origin.pondspawn.command.ClearTongue;
 import com.origin.pondspawn.entity.enums.TargetTypes;
 import com.origin.pondspawn.entity.enums.TongueModes;
 import com.origin.pondspawn.util.ModUtil;
-import net.minecraft.block.AirBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.CactusBlock;
-import net.minecraft.block.MagmaBlock;
+import net.fabricmc.fabric.api.block.v1.BlockFunctionalityTags;
+import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -17,8 +15,13 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -39,6 +42,7 @@ public class Tongue extends Entity {
 
     public boolean initialized = false;
     public boolean retracting = false;
+    public boolean clearable = true;
 
     private double lockLength = TONGUE_LENGTH;
 
@@ -90,7 +94,7 @@ public class Tongue extends Entity {
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
         if (nbt.contains("TongueMode")) {
-            this.setMode(TargetTypes.valueOf(nbt.getString("TongueMode")));
+            this.setTargetMode(TargetTypes.valueOf(nbt.getString("TongueMode")));
         }
         if (nbt.contains("EntityTargetUuid")) {
             this.setEntityTarget(nbt.getUuid("EntityTargetUuid"));
@@ -99,7 +103,7 @@ public class Tongue extends Entity {
 
     @Override
     protected void writeCustomDataToNbt(NbtCompound nbt) {
-        nbt.putString("TongueMode", this.getMode().name());
+        nbt.putString("TongueMode", this.getTargetMode().name());
         if (this.getEntityTarget() != null) {
             nbt.putUuid("EntityTargetUuid", this.getEntityTarget());
         }
@@ -111,20 +115,55 @@ public class Tongue extends Entity {
         if (!initialized) return;
         super.tick();
 
-        this.follow_entity();
         this.retractHandler();
         this.extendHandler();
-        this.checkBlock();
+
+        switch (this.getTargetMode()) {
+            case BLOCK -> this.checkBlock();
+            case ENTITY -> this.follow_entity();
+            case AIR -> this.onAir();
+            case null, default -> {}
+        }
     }
 
-    private void checkBlock() {
-        if (this.targetMode == TargetTypes.POSITION && !(this.getAnimationController() < 1.0f)) {
-            if (ModUtil.getEntityByUUID(this.getWorld(), this.getEntityTarget()) instanceof PlayerEntity player) {
-                Block block = this.getWorld().getBlockState(this.blockTarget).getBlock();
+    private void onAir() {
+        if (ModUtil.getEntityByUUID(this.getWorld(),this.getEntityTarget()) instanceof PlayerEntity player) {
+            if (this.getAnimationController() >= 0.8f) {
+                ClearTongue.killTongue(player);
+            }
+        }
+    }
 
-                if (block instanceof AirBlock) ClearTongue.killTongue(player);
+    private static final TagKey<Block> C_GLASS_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of("c","glass_blocks"));
+    private static final TagKey<Block> C_GLASS_PANES = TagKey.of(RegistryKeys.BLOCK, Identifier.of("c","glass_panes"));
+
+    private void checkBlock() {
+        if (!(this.getAnimationController() < 1.0f)) {
+            if (ModUtil.getEntityByUUID(this.getWorld(), this.getEntityTarget()) instanceof PlayerEntity player) {
+                BlockState blockState = this.getWorld().getBlockState(this.blockTarget);
+                Block block = blockState.getBlock();
+
+                if (block instanceof AirBlock) {
+                    ClearTongue.killTongue(player);
+                }
 
                 DamageSources sources = this.getWorld().getDamageSources();
+
+                boolean inIce = blockState.isIn(BlockTags.ICE);
+
+                if (inIce || block instanceof HoneyBlock){
+                    if (inIce) {
+                        player.setFrozenTicks(
+                                Math.min(player.getFrozenTicks() + 10,400)
+                        );
+                    }
+                    this.clearable = false;
+                } else {
+                    this.clearable = true;
+                }
+
+
+                if (blockState.isIn(C_GLASS_BLOCKS) || blockState.isIn(C_GLASS_PANES) || block instanceof SlimeBlock) ClearTongue.killTongue(player);
 
                 if (block instanceof CactusBlock) {
                     player.damage(sources.cactus(),1.0f);
@@ -168,12 +207,7 @@ public class Tongue extends Entity {
     }
 
     private void follow_entity() {
-
-        if (targetMode != TargetTypes.ENTITY) {
-            return;
-        }
-
-        if (this.getWorld() instanceof ServerWorld world && FollowEntity != null) {
+        if (this.getWorld() instanceof ServerWorld world && getEntityTarget() != null) {
             Entity entity = world.getEntity(FollowEntity);
             if (entity == null) {
                 if (ModUtil.getEntityByUUID(this.getWorld(), this.getEntityTarget()) instanceof PlayerEntity player) {
@@ -193,7 +227,7 @@ public class Tongue extends Entity {
         }
     }
 
-    public TargetTypes getMode() {
+    public TargetTypes getTargetMode() {
         int ordinal = this.dataTracker.get(TARGET_TYPE);
         if (ordinal >= 0 && ordinal < TargetTypes.values().length) {
             return TargetTypes.values()[ordinal];
@@ -201,7 +235,7 @@ public class Tongue extends Entity {
         return TargetTypes.DEFAULT;
     }
 
-    public void setMode(TargetTypes mode) {
+    public void setTargetMode(TargetTypes mode) {
         this.dataTracker.set(TARGET_TYPE, mode.ordinal());
     }
 

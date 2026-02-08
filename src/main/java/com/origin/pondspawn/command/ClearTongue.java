@@ -40,8 +40,8 @@ public class ClearTongue {
     public static void killTongue(PlayerEntity player) {
         Tongue tongue = ((PlayerWithTongueData) player).pondspawn$getTongueEntity();
         if (tongue != null) {
+            if (!tongue.clearable) return;
             ((PlayerWithTongueData) player).pondspawn$setTarget(null);
-            TickScheduler.schedule(1, () -> applyBoost(player));
             tongue.retract(() -> {
                 ((PlayerWithTongueData) player).pondspawn$setTongueEntity(null);
             });

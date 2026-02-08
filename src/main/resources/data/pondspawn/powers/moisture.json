@@ -1,0 +1,202 @@
+{
+  "type": "origins:resource",
+  "min": 0,
+  "max": 2500,
+  "start_value": 2500,
+  "hidden": true,
+  "hud_render": [
+    {
+      "sprite_location": "pondspawn:textures/gui/moisture_bar.png",
+      "bar_index": 0,
+      "condition": {
+        "type": "origins:all_of",
+        "conditions": [
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:moisture",
+            "comparison": ">",
+            "compare_to": 1875
+          },
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:bar-effect_resource",
+            "comparison": "==",
+            "compare_to": 0
+          }
+        ]
+      }
+    },
+    {
+      "sprite_location": "pondspawn:textures/gui/moisture_bar.png",
+      "bar_index": 1,
+      "condition": {
+        "type": "apoli:all_of",
+        "conditions": [
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:moisture",
+            "comparison": "<=",
+            "compare_to": 1875
+          },
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:moisture",
+            "comparison": ">",
+            "compare_to": 1250
+          },
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:bar-effect_resource",
+            "comparison": "==",
+            "compare_to": 0
+          }
+        ]
+      }
+    },
+    {
+      "sprite_location": "pondspawn:textures/gui/moisture_bar.png",
+      "bar_index": 2,
+      "condition": {
+        "type": "apoli:all_of",
+        "conditions": [
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:moisture",
+            "comparison": "<=",
+            "compare_to": 1250
+          },
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:moisture",
+            "comparison": ">",
+            "compare_to": 625
+          },
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:bar-effect_resource",
+            "comparison": "==",
+            "compare_to": 0
+          }
+        ]
+      }
+    },
+    {
+      "sprite_location": "pondspawn:textures/gui/moisture_bar.png",
+      "bar_index": 3,
+      "condition": {
+        "type": "origins:all_of",
+        "conditions": [
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:moisture",
+            "comparison": "<=",
+            "compare_to": 625
+          },
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:bar-effect_resource",
+            "comparison": "==",
+            "compare_to": 0
+          }
+        ]
+      }
+    },
+
+    {
+      "sprite_location": "pondspawn:textures/gui/moisture_bar.png",
+      "bar_index": 4,
+      "condition": {
+        "type": "origins:all_of",
+        "conditions": [
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:moisture",
+            "comparison": ">",
+            "compare_to": 1875
+          },
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:bar-effect_resource",
+            "comparison": "!=",
+            "compare_to": 0
+          }
+        ]
+      }
+    },
+    {
+      "sprite_location": "pondspawn:textures/gui/moisture_bar.png",
+      "bar_index": 5,
+      "condition": {
+        "type": "apoli:all_of",
+        "conditions": [
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:moisture",
+            "comparison": "<=",
+            "compare_to": 1875
+          },
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:moisture",
+            "comparison": ">",
+            "compare_to": 1250
+          },
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:bar-effect_resource",
+            "comparison": "!=",
+            "compare_to": 0
+          }
+        ]
+      }
+    },
+    {
+      "sprite_location": "pondspawn:textures/gui/moisture_bar.png",
+      "bar_index": 6,
+      "condition": {
+        "type": "apoli:all_of",
+        "conditions": [
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:moisture",
+            "comparison": "<=",
+            "compare_to": 1250
+          },
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:moisture",
+            "comparison": ">",
+            "compare_to": 625
+          },
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:bar-effect_resource",
+            "comparison": "!=",
+            "compare_to": 0
+          }
+        ]
+      }
+    },
+    {
+      "sprite_location": "pondspawn:textures/gui/moisture_bar.png",
+      "bar_index": 7,
+      "condition": {
+        "type": "origins:all_of",
+        "conditions": [
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:moisture",
+            "comparison": "<=",
+            "compare_to": 625
+          },
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:bar-effect_resource",
+            "comparison": "!=",
+            "compare_to": 0
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "type": "origins:multiple",
+  "resource": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 3,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false
+    }
+  },
+  "tick": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:change_resource",
+      "resource": "pondspawn:bar-effect_resource",
+      "operation": "add",
+      "change": -1
+    },
+    "condition": {
+      "type": "origins:resource",
+      "resource": "pondspawn:bar-effect_resource",
+      "comparison": "!=",
+      "compare_to": 0
+    }
+  },
+  "hidden": true
+}

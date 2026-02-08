@@ -1,4 +1,4 @@
-package com.origin.pondspawn.entityactions;
+package com.origin.pondspawn.origins.entityactions;
 
 import com.origin.pondspawn.PondspawnOrigin;
 import io.github.apace100.apoli.Apoli;

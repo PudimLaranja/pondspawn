@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 public interface PlayerWithTongueData {
     void pondspawn$setTongueEntity(Tongue tongue);
 
+
     void pondspawn$setTarget(Entity value);
 
     Entity pondspawn$getTarget();

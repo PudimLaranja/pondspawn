@@ -11,8 +11,25 @@
     },
 
     "min_action":{
-      "type": "origins:execute_command",
-      "command": "clearTongue @s"
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "origins:execute_command",
+          "command": "clearTongue @s"
+        },
+        {
+          "type": "origins:change_resource",
+          "resource": "pondspawn:moisture",
+          "operation": "add",
+          "change": -30
+        },
+        {
+          "type": "origins:change_resource",
+          "resource": "pondspawn:bar-effect_resource",
+          "operation": "add",
+          "change": 100
+        }
+      ]
     }
   },
 

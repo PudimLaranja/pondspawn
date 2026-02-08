@@ -1,0 +1,90 @@
+{
+  "type": "origins:multiple",
+
+  "moisture-process": {
+    "type": "origins:action_over_time",
+    "interval": 10,
+    "entity_action": {
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "pondspawn:thirst_handler",
+          "resource": "pondspawn:moisture",
+          "reduce_on": [
+            {
+              "value": 15,
+              "condition": {"type": "origins:on_fire"}
+            },
+            {
+              "value": 15,
+              "condition": {
+                "type": "origins:biome",
+                "condition": {
+                  "type": "origins:temperature",
+                  "comparison": ">=",
+                  "compare_to": 7
+                }
+              }
+            }
+          ],
+          "increase_on": [
+            {
+              "value": 400,
+              "condition": {
+                "type": "apoli:any_of",
+                "conditions": [
+                  {"type": "origins:in_rain"},
+                  {
+                    "type": "origins:fluid_height",
+                    "fluid": "minecraft:water",
+                    "comparison": ">",
+                    "compare_to": 0
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "origins:change_resource",
+          "resource": "pondspawn:moisture",
+          "operation": "add",
+          "change": -5
+        }
+      ]
+    }
+  },
+
+  "on_drink_water": {
+    "type": "apoli:action_on_item_use",
+    "trigger": "finish",
+    "entity_action": {
+      "type": "origins:change_resource",
+      "resource": "pondspawn:moisture",
+      "operation": "add",
+      "change": 600
+    },
+    "item_condition": {
+      "type": "apoli:ingredient",
+      "ingredient": "minecraft:potion"
+    }
+  },
+
+  "on_drink": {
+    "type": "origins:action_on_item_use",
+    "trigger": "finish",
+    "entity_action": {
+      "type": "origins:change_resource",
+      "resource": "pondspawn:moisture",
+      "operation": "add",
+      "change": 400
+    },
+    "item_condition": {
+      "type": "origins:ingredient",
+      "ingredient": "minecraft:honey_bottle"
+    }
+  },
+
+  "name": "Moisty skin",
+  "description": "Like any amphibious creature you breath through your skin and it needs to be moist all the time so you can breath"
+}

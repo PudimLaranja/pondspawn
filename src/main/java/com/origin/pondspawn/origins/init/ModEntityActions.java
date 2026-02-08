@@ -1,6 +1,7 @@
-package com.origin.pondspawn.init;
+package com.origin.pondspawn.origins.init;
 
-import com.origin.pondspawn.entityactions.ExecuteCommandsActionType;
+import com.origin.pondspawn.origins.entityactions.ExecuteCommandsActionType;
+import com.origin.pondspawn.origins.entityactions.ThirstHandlerActionType;
 import io.github.apace100.apoli.registry.ApoliRegistries;
 import net.minecraft.registry.Registry;
 
@@ -12,5 +13,11 @@ public class ModEntityActions {
                 ExecuteCommandsActionType.getFactory().getSerializerId(),
                 ExecuteCommandsActionType.getFactory()
             );
+        Registry.register(
+                ApoliRegistries.ENTITY_ACTION,
+                ThirstHandlerActionType.getFactory().getSerializerId(),
+                ThirstHandlerActionType.getFactory()
+        );
     }
+
 }

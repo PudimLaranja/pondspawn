@@ -11,6 +11,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -86,8 +87,6 @@ public class TongueCommand {
             tongueEntity.setEntityTarget(entity.getUuid());
             tongueEntity.setPosition(position);
 
-            tongueEntity.setMode(TargetTypes.PLAYER);
-
             tongueEntity.finish();
 
             world.spawnEntity(tongueEntity);
@@ -118,7 +117,7 @@ public class TongueCommand {
                         !targetEntity.isSpectator() && targetEntity.isAlive() && targetEntity != player &&
                             targetEntity instanceof PlayerEntity ||
                             targetEntity instanceof MobEntity ||
-                            targetEntity instanceof ProjectileEntity
+                            targetEntity instanceof ItemEntity
                 , // Filter: ignore self, spectators
                 maxDistance * maxDistance
         );
@@ -128,7 +127,8 @@ public class TongueCommand {
             Entity hitEntity = entityHitResult.getEntity();
 
             tongueEntity.FollowEntity = hitEntity.getUuid();
-            tongueEntity.targetMode = TargetTypes.ENTITY;
+
+            tongueEntity.setTargetMode(TargetTypes.ENTITY);
 
             ((PlayerWithTongueData) player).pondspawn$setTarget(hitEntity);
             return hitEntity.getEyePos();
@@ -141,12 +141,13 @@ public class TongueCommand {
                     RaycastContext.FluidHandling.NONE,
                     player
             ));
-            if (blockHitResult.getType() == HitResult.Type.BLOCK) {
+             if (blockHitResult.getType() == HitResult.Type.BLOCK) {
+                tongueEntity.setTargetMode(TargetTypes.BLOCK);
                 tongueEntity.blockTarget = blockHitResult.getBlockPos();
-                tongueEntity.targetMode = TargetTypes.POSITION;
                 return blockHitResult.getPos();
             } else {
-                return Vec3d.ZERO;
+                 tongueEntity.setTargetMode(TargetTypes.AIR);
+                return lookVector.multiply(Tongue.TONGUE_LENGTH).add(startPos);
             }
         }
     }

@@ -4,7 +4,8 @@ import com.origin.pondspawn.PlayerWithTongueData;
 import com.origin.pondspawn.PondspawnOrigin;
 import com.origin.pondspawn.command.ClearTongue;
 import com.origin.pondspawn.entity.custum.Tongue;
-import com.origin.pondspawn.globalconfig.PlayerPhysicsConfig;
+import com.origin.pondspawn.entity.enums.TargetTypes;
+import com.origin.pondspawn.entity.enums.TongueModes;
 import com.origin.pondspawn.init.ModComponents;
 import com.origin.pondspawn.weightSystem.WeightManager;
 import io.github.apace100.origins.component.PlayerOriginComponent;
@@ -18,6 +19,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -36,8 +38,10 @@ public class PlayerEntityMixin implements PlayerWithTongueData {
     @Unique @Nullable
     private Entity Target = null;
 
+
     @Unique
     @Nullable Runnable teleportCallback = null;
+
 
     @Override
     public void pondspawn$setTarget(Entity value) {
@@ -131,171 +135,212 @@ public class PlayerEntityMixin implements PlayerWithTongueData {
         ClearTongue.killTongue((PlayerEntity) (Object) this);
     }
 
-    @Inject(method = "tick", at = @At("HEAD"))
-    private void handleTonguePhysics(CallbackInfo ci) {
+    @Inject(method = "travel", at = @At("HEAD"))
+    private void handleTonguePhysics(Vec3d travelVector,CallbackInfo ci) {
         PlayerEntity player = (PlayerEntity) (Object) this;
 
         Tongue tongue = this.pondspawn$getTongueEntity();
-
 
         player.setNoGravity(false);
 
         if (tongue != null && !tongue.isRemoved()/* && !player.getWorld().isClient()*/ ) {
             if (tongue.getAnimationController() != 1.0) return;
+            if (tongue.getTargetMode() == TargetTypes.AIR) return;
 
             double swingMaxSpeed = 0.6;
             double pullMaxSpeed = 1.2;
 
             double tongueLength = 0;
             double maxVelocity = 0;
-            boolean isPull = false;
-            double drag = 0;
+
+            player.setNoGravity(false);
 
 
             switch (tongue.tongueMode) {
                 case LOOSE, DEFAULT -> {
                     tongueLength = Tongue.TONGUE_LENGTH;
                     maxVelocity = swingMaxSpeed;
-                    drag = PlayerPhysicsConfig.lockMultiplier;
                 }
                 case LOCK -> {
-                    tongueLength = Math.clamp(!player.isOnGround() ? tongue.getLockLength() - 1.3 : tongue.getLockLength(),0d,Double.POSITIVE_INFINITY);
+                    tongueLength = Math.max(tongue.getLockLength() - (!player.isOnGround() ? 3.0 : 0),1);
                     maxVelocity = swingMaxSpeed;
-                    drag = PlayerPhysicsConfig.lockMultiplier;
-
                 }
                 case PULL -> {
-                    tongueLength = 0;
+                    tongueLength = 0.5;
                     maxVelocity = pullMaxSpeed;
-                    isPull = true;
-                    drag = PlayerPhysicsConfig.pullMultiplier;
                 }
             }
 
             if (this.pondspawn$getTarget() != null) {
                 Entity entity = this.pondspawn$getTarget();
-                applyTonguePhysicsWithEntity(player,entity,tongueLength,0.5);
-            } else {
-                applyTonguePhysics(player,tongueLength,maxVelocity,isPull);
-                player.setVelocity(
-                        player.getVelocity().multiply(drag)
+                assert entity != null;
+
+                applyTongueConnectionPhysics(
+                        player,entity,
+                        WeightManager.getWeight(player),
+                        WeightManager.getWeight(entity),
+                        tongueLength
                 );
+
+            }  else {
+                applyTonguePhysics(player,tongueLength);
             }
 
 
         }
     }
 
-    @Unique
-    private Vec3d vecClamp(Vec3d vec, double max){
-
-        if (vec.length() > max) {
-            return vec.normalize().multiply(max);
-        }
-
-        return vec;
-    }
-
 
     @Unique
-    private void applyTonguePhysics(PlayerEntity player, double maxLength,double maxVelocity,boolean isPull) {
+    private void applyTonguePhysics(PlayerEntity player, double maxLength) {
         Tongue tongue = this.pondspawn$getTongueEntity();
         if (tongue == null) return;
 
         Vec3d tonguePos = tongue.getPos();
-        Vec3d playerPos = player.getEyePos();
-        Vec3d vecToTongue = tonguePos.subtract(playerPos);
-        double currentDist = vecToTongue.length();
+        Vec3d playerEyePos = player.getEyePos();
 
-        boolean belowTongue = playerPos.y < tonguePos.y;
+        Vec3d vecToTongue = tonguePos.subtract(playerEyePos);
+        Vec3d dirToTongue = vecToTongue.normalize();
 
-        player.setNoGravity(currentDist > maxLength + 1.5 || isPull && belowTongue);
+        double dist = vecToTongue.length();
 
-        Vec3d velocity = player.getVelocity();
-        Vec3d ropeDir = vecToTongue.normalize();
+        Vec3d vel = player.getVelocity();
+        double velRadial = vel.dotProduct(dirToTongue);
+        Vec3d velTangential = vel.subtract(dirToTongue.multiply(velRadial));
 
-        if (currentDist > maxLength || (currentDist < maxLength && !player.isOnGround() && !isPull && belowTongue)) {
-
-
-            double stretch = currentDist - maxLength;
-
-            double correctionAmount = Math.min(stretch * 0.10, 0.2);
-            velocity = velocity.add(ropeDir.multiply(correctionAmount));
-
-
-        }
-        double radialSpeed = velocity.dotProduct(ropeDir);
-        if (belowTongue) {
-            if (radialSpeed < 0 && !isPull && !player.isOnGround()) {
-                velocity = velocity.subtract(ropeDir.multiply(radialSpeed));
-                velocity = velocity.multiply(1.03);
-            }
-            else if (isPull && currentDist < maxLength + 1.0) {
+        if (dist > maxLength) {
+            double stretch = dist - maxLength;
+            if (tongue.tongueMode == TongueModes.PULL) {
                 player.setNoGravity(true);
-                velocity = velocity.subtract(ropeDir.multiply(radialSpeed));
-                velocity = velocity.multiply(PlayerPhysicsConfig.tangentMultiplier);
+                if (stretch > 0.1) {
+                    velRadial = (0.115 + Math.max(stretch * 2.0,2.0) * 0.045) * 1.0;
+                }
+            } else {
+                if (stretch > 0.1) {
+                    velRadial = (0.115 + 0.9 * 0.045) * 1.0;
+                }
+            }
+
+            if (stretch > 0.03) {
+                double new_velRadial = stretch * 0.0333;
+                if (!(velRadial > new_velRadial)) {
+                    velRadial = new_velRadial;
+                }
+            } else {
+                velRadial = 0;
+            }
+
+            if (
+                    !player.isFallFlying() &&
+                    !player.isOnGround() &&
+                    !(tongue.tongueMode == TongueModes.PULL)
+            ) {
+                velTangential = velTangential.multiply(1.05); //default 1.048;
+            }
+
+        }
+
+        Vec3d velNew;
+
+        if (player.isOnGround()) {
+            velNew = velTangential.add(dirToTongue.multiply(velRadial));
+        } else {
+            velNew = velTangential.add(dirToTongue.multiply(velRadial * 0.99));
+
+            if (dist < maxLength + 0.4) {
+                double drag = 0.3;
+
+                velNew = velNew.multiply(drag,0.6,drag);
             }
         }
 
 
-        player.setVelocity(vecClamp(velocity,maxVelocity));
+
+        player.setVelocity(velNew);
         player.velocityModified = true;
-        if (belowTongue) player.fallDistance = 0f;
+        if (dirToTongue.y > -0.15 && dist + 0.5 > maxLength) {
+           player.onLanding();
+        }
+
     }
 
-    @Unique private void applyTonguePhysicsWithEntity(PlayerEntity player,Entity entity,double maxLength, double maxVelocity) {
-        Tongue tongue = this.pondspawn$getTongueEntity();
-        if (tongue == null) return;
+    private void applyTongueConnectionPhysics(PlayerEntity player, Entity entity, double playerWeight, double entityWeight, double maxLength) {
+        if (player == null || entity == null) return;
 
-        Vec3d tonguePos = tongue.getPos();
+        // 1. Get Positions
+        // We use getPos() for center-of-mass physics logic
         Vec3d playerPos = player.getPos();
-        Vec3d vecToTongue = tonguePos.subtract(playerPos);
-        double currentDist = vecToTongue.length();
+        Vec3d entityPos = entity.getPos();
 
-        Vec3d velocity = player.getVelocity();
-        Vec3d ropeDir = vecToTongue.normalize();
+        Vec3d vecToEntity = entityPos.subtract(playerPos);
+        double dist = vecToEntity.length();
 
-        if (currentDist > maxLength ) {
+        // If the rope is loose (distance < max length), physics do not apply.
+        if (dist <= maxLength) return;
 
+        // 2. Calculate Directions
+        Vec3d dirToEntity = vecToEntity.normalize();
+        Vec3d dirToPlayer = dirToEntity.negate(); // Direction from Entity -> Player
 
-            double stretch = currentDist - maxLength;
+        // 3. Calculate Weight Ratios (Who gets pulled more?)
+        double totalWeight = playerWeight + entityWeight;
 
-            double correctionAmount = Math.min(stretch * 0.10, 0.2);
-            velocity = velocity.add(ropeDir.multiply(correctionAmount));
+        // If Entity is heavy, player gets pulled 90%. If Player is heavy, Entity gets pulled 90%.
+        double playerInfluence = entityWeight / totalWeight;
+        double entityInfluence = playerWeight / totalWeight;
 
+        // 4. Calculate Tension (The "Stretch" force)
+        double stretch = dist - maxLength;
 
-            double playerWeight = WeightManager.getWeight(player);
-            double entityWeight = WeightManager.getWeight(entity);
+        // Elasticity factor: determines how "snappy" the tongue is.
+        // Derived from your reference's logic (stretch * ~0.033). Adjusted slightly for entity-to-entity feel.
+        double tensionForce = stretch * 0.06;
 
-            double totalWeight = playerWeight + entityWeight;
+        // --- APPLY TO PLAYER ---
+        Vec3d pVel = player.getVelocity();
 
-            double mult = 0.5;
+        // Split velocity into: Moving towards/away (Radial) vs Swinging around (Tangential)
+        double pVelRadial = pVel.dotProduct(dirToEntity);
+        Vec3d pVelTangential = pVel.subtract(dirToEntity.multiply(pVelRadial));
 
-            double playerMult = entityWeight / totalWeight * 2.0 * mult;
-            double entityMult = playerWeight / totalWeight * mult;
+        // If player is moving AWAY from entity, apply drag to that motion so they don't fly off endlessly
+        if (pVelRadial < 0) {
+            pVelRadial *= 0.5; // Dampen the 'moving away' energy
+        }
 
-            if (playerMult < 0.7) playerMult = 1.0;
-            if (entityMult < 0.7) entityMult = 1.0;
+        // Add the tension pull towards the entity
+        pVelRadial += tensionForce * playerInfluence;
 
+        // Recombine and set
+        // Note: We multiply tangential by 0.99 to simulate air resistance/friction slightly, preventing infinite orbits
+        Vec3d pVelNew = pVelTangential.multiply(0.99).add(dirToEntity.multiply(pVelRadial));
+        player.setVelocity(pVelNew);
+        player.velocityModified = true;
 
-            if (playerMult > 0.3) {
-                player.addVelocity(velocity.multiply(playerMult));
-                player.setVelocity(vecClamp(player.getVelocity(),maxVelocity));
-                player.velocityModified = true;
-                if (playerPos.y < entity.getPos().y) player.fallDistance = 0f;
-            }
+        // --- APPLY TO ENTITY ---
+        Vec3d eVel = entity.getVelocity();
 
-            if (entityMult > 0.3) {
+        // Split velocity
+        double eVelRadial = eVel.dotProduct(dirToPlayer);
+        Vec3d eVelTangential = eVel.subtract(dirToPlayer.multiply(eVelRadial));
 
-                if (entity.getPos().y < playerPos.y) entity.fallDistance = 0f;
-                if (entity instanceof PlayerEntity playerEntity) {
-                    playerEntity.addVelocity(velocity.multiply(-entityMult * 2.0));
-                    playerEntity.velocityModified = true;
-                } else {
-                    entity.addVelocity(velocity.multiply(-entityMult));
-                }
-                entity.setVelocity(vecClamp(entity.getVelocity(),maxVelocity));
-            }
+        // If entity is moving AWAY from player, apply drag
+        if (eVelRadial < 0) {
+            eVelRadial *= 0.5;
+        }
+
+        // Add tension pull towards the player
+        eVelRadial += tensionForce * entityInfluence;
+
+        // Recombine and set
+        Vec3d eVelNew = eVelTangential.multiply(0.99).add(dirToPlayer.multiply(eVelRadial));
+        entity.setVelocity(eVelNew);
+        entity.velocityModified = true;
+
+        // Optional: If you want the landing logic from your original code
+        // This checks if the player is being pulled upwards significantly
+        if (dirToEntity.y > -0.15 && dist > maxLength + 0.5) {
+            //player.onLanding();
         }
     }
 }
