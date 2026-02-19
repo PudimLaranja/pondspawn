@@ -52,7 +52,31 @@
     }
   },
 
+  "tongue-jump": {
+    "type": "origins:active_self",
+    "entity_action": {
+      "type": "origins:execute_command",
+      "command": "say AAAAAAAAA"
+    },
+    "key": {
+      "key": "key.jump"
+    },
+    "condition": {
+      "type": "apoli:resource",
+      "resource": "pondspawn:tongue-release_pressed",
+      "comparison": ">",
+      "compare_to": 0
+    }
+  },
 
+  "release-on-hit": {
+    "type": "origins:action_when_damage_taken",
+    "cooldown": 0,
+    "entity_action": {
+      "type": "origins:execute_command",
+      "command": "clearTongue @s"
+    }
+  },
 
 
 

@@ -12,18 +12,46 @@
           "resource": "pondspawn:moisture",
           "reduce_on": [
             {
-              "value": 15,
+              "value": 20,
               "condition": {"type": "origins:on_fire"}
             },
             {
-              "value": 15,
+              "value": 5,
               "condition": {
                 "type": "origins:biome",
                 "condition": {
                   "type": "origins:temperature",
                   "comparison": ">=",
-                  "compare_to": 7
+                  "compare_to": 1
                 }
+              }
+            },
+            {
+              "value": 3,
+              "condition": {
+                "type": "pondspawn:armor_equipped",
+                "piece": "helmet"
+              }
+            },
+            {
+              "value": 10,
+              "condition": {
+                "type": "pondspawn:armor_equipped",
+                "piece": "chestplate"
+              }
+            },
+            {
+              "value": 4,
+              "condition": {
+                "type": "pondspawn:armor_equipped",
+                "piece": "leggings"
+              }
+            },
+            {
+              "value": 3,
+              "condition": {
+                "type": "pondspawn:armor_equipped",
+                "piece": "boots"
               }
             }
           ],
@@ -49,9 +77,55 @@
           "type": "origins:change_resource",
           "resource": "pondspawn:moisture",
           "operation": "add",
-          "change": -5
+          "change": -1
         }
       ]
+    }
+  },
+
+  "moisture75": {
+    "type":"origins:action_over_time",
+    "entity_action": {
+      "type": "origins:execute_command",
+      "command": "effect give @s minecraft:slowness 2 1 true"
+    },
+    "condition": {
+      "type": "origins:resource",
+      "resource": "pondspawn:moisture",
+      "comparison": "<",
+      "compare_to": 1875
+    }
+  },
+
+  "moisture50": {
+    "type":"origins:action_over_time",
+    "entity_action": {
+      "type": "origins:execute_command",
+      "command": "effect give @s minecraft:weakness 2 1 true"
+    },
+    "condition": {
+      "type": "origins:resource",
+      "resource": "pondspawn:moisture",
+      "comparison": "<",
+      "compare_to": 1250
+    }
+  },
+
+  "suffocate": {
+    "type": "origins:water_breathing",
+    "condition": {
+      "type": "origins:resource",
+      "resource": "pondspawn:moisture",
+      "comparison": "==",
+      "compare_to": 0
+    }
+  },
+
+  "on-death": {
+    "type": "origins:action_on_callback",
+    "entity_action_respawned": {
+      "type": "origins:execute_command",
+      "command": "resource set @s pondspawn:moisture 2500"
     }
   },
 
@@ -82,6 +156,51 @@
     "item_condition": {
       "type": "origins:ingredient",
       "ingredient": "minecraft:honey_bottle"
+    }
+  },
+
+
+  "fire_damage": {
+    "type": "origins:action_when_damage_taken",
+    "cooldown": 0,
+    "entity_action": {
+      "type": "origins:change_resource",
+      "resource": "pondspawn:moisture",
+      "operation": "add",
+      "change": -20
+    },
+    "damage_condition":{
+      "type": "origins:any_of",
+      "conditions": [
+        {
+          "type": "origins:name",
+          "name": "fireball"
+        },
+        {
+          "type": "origins:name",
+          "name": "fireworks"
+        },
+        {
+          "type": "origins:name",
+          "name": "lava"
+        },
+        {
+          "type": "origins:name",
+          "name": "explosion"
+        },
+        {
+          "type": "origins:name",
+          "name": "hotFloor"
+        },
+        {
+          "type": "origins:name",
+          "name": "inFire"
+        },
+        {
+          "type": "origins:name",
+          "name": "onFire"
+        }
+      ]
     }
   },
 

@@ -1,0 +1,44 @@
+{
+  "type": "origins:modify_damage_taken",
+  "cooldown": 1,
+  "modifier": {
+    "operation": "multiply_total_multiplicative",
+    "amount": 1.5
+  },
+  "damage_condition": {
+    "type": "origins:any_of",
+    "conditions":[
+      {
+        "type": "origins:name",
+        "name": "fireball"
+      },
+      {
+        "type": "origins:name",
+        "name": "fireworks"
+      },
+      {
+        "type": "origins:name",
+        "name": "lava"
+      },
+      {
+        "type": "origins:name",
+        "name": "explosion"
+      },
+      {
+        "type": "origins:name",
+        "name": "hotFloor"
+      },
+      {
+        "type": "origins:name",
+        "name": "inFire"
+      },
+      {
+        "type": "origins:name",
+        "name": "onFire"
+      }
+    ]
+  },
+
+  "name": "Skin Carbonization",
+  "description": "Fire deeply hurt your skin and you.\nYou take 1.5x fire damage."
+}

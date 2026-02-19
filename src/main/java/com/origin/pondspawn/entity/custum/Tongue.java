@@ -128,6 +128,11 @@ public class Tongue extends Entity {
 
     private void onAir() {
         if (ModUtil.getEntityByUUID(this.getWorld(),this.getEntityTarget()) instanceof PlayerEntity player) {
+            Vec3d dir = player.getRotationVector();
+            Vec3d pos = player.getEyePos();
+
+            this.setPosition(dir.multiply(TONGUE_LENGTH).add(pos));
+
             if (this.getAnimationController() >= 0.8f) {
                 ClearTongue.killTongue(player);
             }
@@ -256,7 +261,7 @@ public class Tongue extends Entity {
     }
 
     public void setTongueMode(TongueModes tongueMode) {
-        messagePlayer(tongueMode.asString());
+        //messagePlayer(tongueMode.asString());
         if (tongueMode == TongueModes.LOCK) {
             if (this.getWorld() instanceof ServerWorld world) {
                 if (world.getEntity(this.getEntityTarget()) instanceof  PlayerEntity player) {

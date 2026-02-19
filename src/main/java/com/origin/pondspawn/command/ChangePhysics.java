@@ -5,25 +5,19 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import com.origin.pondspawn.PlayerWithTongueData;
 import com.origin.pondspawn.command.enums.PhysicsConstants;
-import com.origin.pondspawn.entity.custum.Tongue;
-import com.origin.pondspawn.entity.enums.TongueModes;
 import com.origin.pondspawn.globalconfig.PlayerPhysicsConfig;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 public class ChangePhysics {
-    private static int changeLogic(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private static int commandLogic(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 
         String constant_name = StringArgumentType.getString(context,"constant");
 
@@ -96,7 +90,7 @@ public class ChangePhysics {
                                     .suggests(PHYSICS_SUGGESTIONS)
                                     .then(
                                         CommandManager.argument("value", DoubleArgumentType.doubleArg(0.0,2.0))
-                                        .executes(ChangePhysics::changeLogic)
+                                        .executes(ChangePhysics::commandLogic)
                                     )
                                 )
 

@@ -17,10 +17,9 @@ import net.minecraft.server.command.ServerCommandSource;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.UUID;
 
 public class ChangeTongue {
-    private static int changeLogic(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private static int commandLogic(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 
         Entity entity = EntityArgumentType.getEntity(context,"entity");
 
@@ -59,7 +58,7 @@ public class ChangeTongue {
                                     .then(
                                             CommandManager.argument("mode", StringArgumentType.word())
                                                     .suggests(TONGUE_MODE_SUGGESTIONS)
-                                                    .executes(ChangeTongue::changeLogic)
+                                                    .executes(ChangeTongue::commandLogic)
 
 
                                     )

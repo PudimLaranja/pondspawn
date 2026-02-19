@@ -38,10 +38,15 @@ public class PlayerEntityMixin implements PlayerWithTongueData {
     @Unique @Nullable
     private Entity Target = null;
 
+    @Unique boolean jumpAllowed = false;
 
     @Unique
     @Nullable Runnable teleportCallback = null;
 
+    @Override
+    public boolean pondspawn$jumpAllowed() {
+        return this.jumpAllowed;
+    }
 
     @Override
     public void pondspawn$setTarget(Entity value) {
@@ -114,6 +119,7 @@ public class PlayerEntityMixin implements PlayerWithTongueData {
         Identifier originId = PondspawnOrigin.id("pondspawn");
 
 
+
         PlayerOriginComponent component = (PlayerOriginComponent) io.github.apace100.origins.registry.ModComponents
                 .ORIGIN.get(player);
 
@@ -122,7 +128,7 @@ public class PlayerEntityMixin implements PlayerWithTongueData {
                     .anyMatch(origin -> origin.getId().equals(originId));
 
             if (isFrog) {
-                float safeDistance = 5.0f;
+                float safeDistance = 10.0f;
                 return Math.max(0, fallDistance - safeDistance);
             }
         }
@@ -257,6 +263,11 @@ public class PlayerEntityMixin implements PlayerWithTongueData {
 
 
         player.setVelocity(velNew);
+        if(!(dirToTongue.y > -0.15)) {
+            this.jumpAllowed = true;
+        } else {
+            this.jumpAllowed = false;
+        }
         player.velocityModified = true;
         if (dirToTongue.y > -0.15 && dist + 0.5 > maxLength) {
            player.onLanding();
@@ -264,6 +275,7 @@ public class PlayerEntityMixin implements PlayerWithTongueData {
 
     }
 
+    @Unique
     private void applyTongueConnectionPhysics(PlayerEntity player, Entity entity, double playerWeight, double entityWeight, double maxLength) {
         if (player == null || entity == null) return;
 

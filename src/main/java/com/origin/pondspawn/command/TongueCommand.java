@@ -14,7 +14,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -32,7 +31,7 @@ public class TongueCommand {
 
 
 
-    private static int tongue_logic(CommandContext<ServerCommandSource> context,boolean useCaller,boolean raycast)
+    private static int commandLogic(CommandContext<ServerCommandSource> context, boolean useCaller, boolean raycast)
             throws CommandSyntaxException
     {
 
@@ -159,13 +158,13 @@ public class TongueCommand {
                 environment
         ) -> {
             dispatcher.register(CommandManager.literal("tongue")
-                            .executes(context -> tongue_logic(context,true,true))
+                            .executes(context -> commandLogic(context,true,true))
                     .then(
                             CommandManager.argument("entity",EntityArgumentType.entity())
-                                    .executes(context -> tongue_logic(context,false, true))
+                                    .executes(context -> commandLogic(context,false, true))
                                     .then(
                                     CommandManager.argument("pos",BlockPosArgumentType.blockPos())
-                                            .executes(context -> tongue_logic(context,false,false)
+                                            .executes(context -> commandLogic(context,false,false)
                                             )
                             )
                     )

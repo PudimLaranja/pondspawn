@@ -10,5 +10,6 @@ public class ModCommands {
         AnimationCommand.register();
         WeightCommand.register();
         ChangePhysics.register();
+        TongueJumpCommand.register();
     }
 }

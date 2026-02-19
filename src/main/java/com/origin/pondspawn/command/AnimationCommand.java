@@ -11,7 +11,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
 public class AnimationCommand {
-    public static int animationLogic(CommandContext<ServerCommandSource> context) {
+    public static int commandLogic(CommandContext<ServerCommandSource> context) {
         float animationPercent = FloatArgumentType.getFloat(context,"percent");
 
         if (context.getSource().getEntity() instanceof PlayerEntity player)  {
@@ -34,7 +34,7 @@ public class AnimationCommand {
                 ) -> {
             dispatcher.register(CommandManager.literal("animation").then(
                         CommandManager.argument("percent", FloatArgumentType.floatArg(0f,1f))
-                                .executes(AnimationCommand::animationLogic)
+                                .executes(AnimationCommand::commandLogic)
                     )
             );
         });

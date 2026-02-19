@@ -7,11 +7,12 @@ import net.minecraft.entity.Entity;
 public interface PlayerWithTongueData {
     void pondspawn$setTongueEntity(Tongue tongue);
 
+    Tongue pondspawn$getTongueEntity();
 
     void pondspawn$setTarget(Entity value);
 
     Entity pondspawn$getTarget();
 
-    Tongue pondspawn$getTongueEntity();
+    boolean pondspawn$jumpAllowed();
 
 }

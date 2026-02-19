@@ -7,13 +7,14 @@
     "pondspawn:quick-hops",
     "pondspawn:moisture",
     "pondspawn:bar-effect",
-    "pondspawn:moisty-skin"
+    "pondspawn:moisty-skin",
+    "pondspawn:fire_weakness"
   ],
   "icon": {
     "id":"minecraft:lily_pad"
   },
   "order": 0,
-  "impact": 2,
+  "impact": 3,
   "name": "Pondspawn",
   "description": "WIP",
   "unchoosable": false

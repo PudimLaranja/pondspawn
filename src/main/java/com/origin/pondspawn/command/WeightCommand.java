@@ -2,20 +2,17 @@ package com.origin.pondspawn.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.origin.pondspawn.PlayerWithTongueData;
-import com.origin.pondspawn.entity.custum.Tongue;
 import com.origin.pondspawn.weightSystem.WeightManager;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
 public class WeightCommand {
-    private static int getWeight(CommandContext<ServerCommandSource> context,boolean useCaller) throws CommandSyntaxException {
+    private static int commandLogic(CommandContext<ServerCommandSource> context, boolean useCaller) throws CommandSyntaxException {
 
         Entity entity;
 
@@ -43,10 +40,10 @@ public class WeightCommand {
                 environment
         ) -> {
             dispatcher.register(CommandManager.literal("weight")
-                            .executes(context -> getWeight(context,true))
+                            .executes(context -> commandLogic(context,true))
                     .then(
                             CommandManager.argument("entity", EntityArgumentType.entity())
-                                    .executes(context -> getWeight(context,false))
+                                    .executes(context -> commandLogic(context,false))
 
 
                     )

@@ -1,6 +1,7 @@
 package com.origin.pondspawn;
 
 import com.origin.pondspawn.init.*;
+import com.origin.pondspawn.origins.init.ModConditions;
 import com.origin.pondspawn.origins.init.ModEntityActions;
 import com.origin.pondspawn.util.TickScheduler;
 import com.origin.pondspawn.weightSystem.WeightManager;
@@ -36,6 +37,7 @@ public class PondspawnOrigin implements ModInitializer {
         ModCommands.load();
         ModEntities.load();
         ModEntityActions.register();
+        ModConditions.register();
         LOGGER.info("Loaded:]");
 
 	}

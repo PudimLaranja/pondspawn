@@ -25,6 +25,7 @@ import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.annotation.Target;
 import java.util.UUID;
 
 
@@ -37,26 +38,12 @@ public class TongueRenderer extends EntityRenderer<Tongue> {
 
     private final TongueModel model;
 
-    private Vec3d targetCoordinate = new Vec3d(0,0,0);
-
-    //Options
-
-    private final Vector3f tongueFirstPersonOffset = new Vector3f(0,-0.3f,0.3f);
-
-    //
-    private static Vector3f to_Vector3f(Vec3d vec) {
-        return new Vector3f(
-                (float) vec.x,
-                (float) vec.y,
-                (float) vec.z
-        );
-    }
 
     private static Vec3d to_Vec3d(Vector3f vec) {
         return new Vec3d(
-                (double) vec.x,
-                (double) vec.y,
-                (double) vec.z
+                vec.x,
+                vec.y,
+                vec.z
         );
     }
 
@@ -93,6 +80,7 @@ public class TongueRenderer extends EntityRenderer<Tongue> {
        return eyePos.add(to_Vec3d(neckOffset)).add(to_Vec3d(mouthOffset));
     }
 
+
     @Override
     public Identifier getTexture(Tongue entity) {
         return TEXTURE;
@@ -123,7 +111,7 @@ public class TongueRenderer extends EntityRenderer<Tongue> {
 
         ClientWorld clientWorld = (ClientWorld) entity.getWorld();
 
-        targetCoordinate = entity.getPos().add(new Vec3d(0.0,1.0,0.0));
+        Vec3d targetCoordinate = entity.getPos().add(new Vec3d(0.0, 1.0, 0.0));
 
 
         if (clientWorld != null) {
@@ -142,8 +130,15 @@ public class TongueRenderer extends EntityRenderer<Tongue> {
 
             if (targetEntity != null) {
 
-                if (targetEntity instanceof PlayerEntity) {
-                    PlayerEntity player = (PlayerEntity) targetEntity;
+                if (targetEntity instanceof PlayerEntity player) {
+
+                    if (entity.getTargetMode() == TargetTypes.AIR) {
+                        Vec3d dir = player.getRotationVec(tickDelta);
+                        entityPos = dir.multiply(Tongue.TONGUE_LENGTH)
+                        .add(player.getLerpedPos(tickDelta));
+                        targetCoordinate = entityPos.add(0.0,1.0,0.0);
+                    }
+
                     MinecraftClient client = MinecraftClient.getInstance();
                     if (
                         client.player instanceof ClientPlayerEntity clientPlayer &&
@@ -181,6 +176,18 @@ public class TongueRenderer extends EntityRenderer<Tongue> {
         float targetPitch = (float) MathHelper.atan2(
                 directionToTarget.y,horizontalDistance
         );
+
+        if (entity.getTargetMode() == TargetTypes.AIR) {
+
+            Vec3d translateAmount = entityPos.subtract(entity.getLerpedPos(tickDelta));
+
+            matrices.translate(
+                    translateAmount.x,
+                    translateAmount.y,
+                    translateAmount.z
+            );
+
+        }
 
         matrices.multiply(RotationAxis.POSITIVE_Y.rotation(-targetYaw));
         matrices.multiply(RotationAxis.POSITIVE_X.rotation(-targetPitch));

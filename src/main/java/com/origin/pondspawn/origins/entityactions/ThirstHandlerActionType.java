@@ -24,48 +24,39 @@ public class ThirstHandlerActionType {
 
     public static void action(Entity entity, PowerReference power, List<SerializableData.Instance> reduce_conditions,List<SerializableData.Instance> increase_conditions) {
 
-        int oldValue = 0;
-        int newValue = 0;
+        int oldValue;
+        int newValue;
 
         switch (power.getType(entity)) {
             case VariableIntPowerType resource -> {
-                if (entity instanceof PlayerEntity player) {
 
-                    oldValue = resource.getValue();
-                    newValue = oldValue;
-
-                    //Armour
-                    newValue = changeThirst(newValue,!player.getEquippedStack(EquipmentSlot.HEAD).isEmpty(), -2);
-                    newValue = changeThirst(newValue,!player.getEquippedStack(EquipmentSlot.CHEST).isEmpty(),-3);
-                    newValue = changeThirst(newValue,!player.getEquippedStack(EquipmentSlot.LEGS).isEmpty(), -2);
-                    newValue = changeThirst(newValue,!player.getEquippedStack(EquipmentSlot.FEET).isEmpty(), -1);
+                oldValue = resource.getValue();
+                newValue = oldValue;
 
 
-                    for (SerializableData.Instance data: increase_conditions) {
+                for (SerializableData.Instance data: increase_conditions) {
 
-                        int increase = data.getInt("value");
+                    int increase = data.getInt("value");
 
-                        Predicate<Entity> condition = data.get("condition");
+                    Predicate<Entity> condition = data.get("condition");
 
-                        newValue = changeThirst(newValue,condition.test(entity),increase);
+                    newValue = changeThirst(newValue,condition.test(entity),increase);
 
-                    }
-
-                    for (SerializableData.Instance data: reduce_conditions) {
-
-                        int reduce = data.getInt("value");
-
-                        Predicate<Entity> condition = data.get("condition");
-
-                        newValue = changeThirst(newValue,condition.test(entity),-reduce);
-
-                    }
-
-                    resource.setValue(
-                            Math.clamp(newValue,resource.getMin(),resource.getMax())
-                    );
                 }
 
+                for (SerializableData.Instance data: reduce_conditions) {
+
+                    int reduce = data.getInt("value");
+
+                    Predicate<Entity> condition = data.get("condition");
+
+                    newValue = changeThirst(newValue,condition.test(entity),-reduce);
+
+                }
+
+                resource.setValue(
+                        Math.clamp(newValue,resource.getMin(),resource.getMax())
+                );
             }
             case null, default -> throw new IllegalStateException("Unexpected value: " + power.getType(entity));
         }
