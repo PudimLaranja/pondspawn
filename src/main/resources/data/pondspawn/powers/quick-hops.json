@@ -42,7 +42,7 @@
       "type": "origins:resource",
       "resource": "pondspawn:moisture",
       "comparison": ">",
-      "compare_to": 600
+      "compare_to": 312
     }
   },
 

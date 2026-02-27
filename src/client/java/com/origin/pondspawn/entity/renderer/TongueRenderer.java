@@ -33,7 +33,7 @@ public class TongueRenderer extends EntityRenderer<Tongue> {
 
 
 
-    public static final Identifier TEXTURE = PondspawnOrigin.id("/textures/entity/tongue.png");
+    public static final Identifier TEXTURE = PondspawnOrigin.id("/textures/entity/tongue_texture.png");
     private static final Logger log = LoggerFactory.getLogger(TongueRenderer.class);
 
     private final TongueModel model;

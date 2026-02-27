@@ -83,7 +83,7 @@
     }
   },
 
-  "moisture75": {
+  "moisture50": {
     "type":"origins:action_over_time",
     "entity_action": {
       "type": "origins:execute_command",
@@ -93,11 +93,11 @@
       "type": "origins:resource",
       "resource": "pondspawn:moisture",
       "comparison": "<",
-      "compare_to": 1875
+      "compare_to": 1250
     }
   },
 
-  "moisture50": {
+  "moisture25": {
     "type":"origins:action_over_time",
     "entity_action": {
       "type": "origins:execute_command",
@@ -107,7 +107,7 @@
       "type": "origins:resource",
       "resource": "pondspawn:moisture",
       "comparison": "<",
-      "compare_to": 1250
+      "compare_to": 625
     }
   },
 

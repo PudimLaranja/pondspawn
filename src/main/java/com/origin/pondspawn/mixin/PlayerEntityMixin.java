@@ -148,6 +148,7 @@ public class PlayerEntityMixin implements PlayerWithTongueData {
         Tongue tongue = this.pondspawn$getTongueEntity();
 
         player.setNoGravity(false);
+        this.jumpAllowed = false;
 
         if (tongue != null && !tongue.isRemoved()/* && !player.getWorld().isClient()*/ ) {
             if (tongue.getAnimationController() != 1.0) return;
@@ -263,11 +264,7 @@ public class PlayerEntityMixin implements PlayerWithTongueData {
 
 
         player.setVelocity(velNew);
-        if(!(dirToTongue.y > -0.15)) {
-            this.jumpAllowed = true;
-        } else {
-            this.jumpAllowed = false;
-        }
+        this.jumpAllowed = dirToTongue.y > -0.15;
         player.velocityModified = true;
         if (dirToTongue.y > -0.15 && dist + 0.5 > maxLength) {
            player.onLanding();

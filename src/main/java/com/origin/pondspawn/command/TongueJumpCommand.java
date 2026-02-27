@@ -4,12 +4,15 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.origin.pondspawn.PlayerWithTongueData;
 import com.origin.pondspawn.entity.custum.Tongue;
+import com.origin.pondspawn.globalconfig.PlayerPhysicsConfig;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.Vec3d;
 
 public class TongueJumpCommand {
     private static int commandLogic(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -18,8 +21,10 @@ public class TongueJumpCommand {
 
         if (entity instanceof PlayerEntity player) {
             if (((PlayerWithTongueData) player).pondspawn$jumpAllowed()) {
+
                 ClearTongue.killTongue(player);
-                player.addVelocity(0,5,0);
+                Vec3d dir = player.getRotationVector().multiply(1,0,1).add(0,1,0);
+                player.setVelocity(dir.multiply(PlayerPhysicsConfig.jumpVector));
                 player.velocityModified = true;
             }
         }

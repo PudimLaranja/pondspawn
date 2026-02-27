@@ -13,68 +13,36 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.Arrays;
 
 public class ChangePhysics {
+
+    private static final Vec3d startValue = PlayerPhysicsConfig.jumpVector;
+
     private static int commandLogic(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 
-        String constant_name = StringArgumentType.getString(context,"constant");
+        double forward = DoubleArgumentType.getDouble(context,"forward");
+        double upward = DoubleArgumentType.getDouble(context,"upward");
 
-        double value = DoubleArgumentType.getDouble(context,"value");
+        PlayerPhysicsConfig.jumpVector = new Vec3d(0.0,upward,forward);
 
-        switch (constant_name){
-            case "pull" -> {
-                PlayerPhysicsConfig.pullMultiplier = value;
-            }
-            case "swing" -> {
-                PlayerPhysicsConfig.lockMultiplier = value;
-            }
-            case "tangent" -> {
-                PlayerPhysicsConfig.tangentMultiplier = value;
-            }
-        }
+        assert context.getSource().getEntity() != null;
+        context.getSource().getEntity().sendMessage(Text.literal(PlayerPhysicsConfig.jumpVector.toString()));
+        return 0;
+    }
+
+    private static int reset(CommandContext<ServerCommandSource> context) {
+        PlayerPhysicsConfig.jumpVector = startValue;
+
+        assert context.getSource().getEntity() != null;
+        context.getSource().getEntity().sendMessage(Text.literal(PlayerPhysicsConfig.jumpVector.toString()));
 
         return 0;
     }
 
-    private static int getLogic(CommandContext<ServerCommandSource> context) throws  CommandSyntaxException {
 
-        String constant_name = StringArgumentType.getString(context,"constant");
-
-        if (context.getSource().getEntity() instanceof PlayerEntity player) {
-
-            switch (constant_name){
-                case "pull" -> {
-                    player.sendMessage(
-                            Text.literal("%f".formatted(PlayerPhysicsConfig.pullMultiplier))
-                    );
-                }
-                case "swing" -> {
-                    player.sendMessage(
-                            Text.literal("%f".formatted(PlayerPhysicsConfig.lockMultiplier))
-                    );
-                }
-                case "tangent" -> {
-                    player.sendMessage(
-                            Text.literal("%f".formatted(PlayerPhysicsConfig.tangentMultiplier))
-                    );
-                }
-            }
-        }
-
-        return 0;
-
-    }
-
-    private static final SuggestionProvider<ServerCommandSource> PHYSICS_SUGGESTIONS =
-            (context, builder) -> {
-                String[] types = Arrays.stream(PhysicsConstants.values())
-                        .map(PhysicsConstants::asString)
-                        .toArray(String[]::new);
-
-                return CommandSource.suggestMatching(types,builder);
-            };
 
     public static void register() {
         CommandRegistrationCallback.EVENT.register((
@@ -83,26 +51,18 @@ public class ChangePhysics {
                 environment
         ) -> {
             dispatcher.register(CommandManager.literal("changePhysics")
-                    .then(
-                        CommandManager.literal("set")
-                                .then(
-                                    CommandManager.argument("constant", StringArgumentType.word())
-                                    .suggests(PHYSICS_SUGGESTIONS)
-                                    .then(
-                                        CommandManager.argument("value", DoubleArgumentType.doubleArg(0.0,2.0))
-                                        .executes(ChangePhysics::commandLogic)
-                                    )
-                                )
+                .then(
+                        CommandManager.literal("reset")
+                                .executes(ChangePhysics::reset)
+                )
+                .then(
+                    CommandManager.argument("forward", DoubleArgumentType.doubleArg())
+                            .then(
+                                    CommandManager.argument("upward", DoubleArgumentType.doubleArg())
+                                            .executes(ChangePhysics::commandLogic)
+                            )
+                )
 
-                    )
-                    .then(
-                            CommandManager.literal("get")
-                                    .then(
-                                            CommandManager.argument("constant", StringArgumentType.word())
-                                                    .suggests(PHYSICS_SUGGESTIONS)
-                                                    .executes(ChangePhysics::getLogic)
-                                    )
-                    )
             );
         });
     }

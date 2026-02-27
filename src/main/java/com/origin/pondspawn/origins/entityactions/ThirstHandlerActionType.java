@@ -1,85 +1,33 @@
 package com.origin.pondspawn.origins.entityactions;
 
-import com.origin.pondspawn.PondspawnOrigin;
-import io.github.apace100.apoli.action.factory.ActionTypeFactory;
+import com.origin.pondspawn.origins.init.ModActionTypes;
+import io.github.apace100.apoli.action.ActionConfiguration;
+import io.github.apace100.apoli.action.context.EntityActionContext;
+import io.github.apace100.apoli.action.type.EntityActionType;
 import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.condition.EntityCondition;
 import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.data.TypedDataObjectFactory;
 import io.github.apace100.apoli.power.PowerReference;
-import io.github.apace100.apoli.power.type.VariableIntPowerType;
+import io.github.apace100.apoli.power.type.PowerType;
+import io.github.apace100.apoli.util.PowerUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.player.PlayerEntity;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.Predicate;
 
-public class ThirstHandlerActionType {
+public class ThirstHandlerActionType extends EntityActionType {
 
     private static final SerializableData THIRST_CONDITIONS_DATA = new SerializableData()
             .add("value", SerializableDataTypes.INT)
-            .add("condition",ApoliDataTypes.ENTITY_CONDITION);
+            .add("condition", EntityCondition.DATA_TYPE);
 
-    public static void action(Entity entity, PowerReference power, List<SerializableData.Instance> reduce_conditions,List<SerializableData.Instance> increase_conditions) {
-
-        int oldValue;
-        int newValue;
-
-        switch (power.getType(entity)) {
-            case VariableIntPowerType resource -> {
-
-                oldValue = resource.getValue();
-                newValue = oldValue;
-
-
-                for (SerializableData.Instance data: increase_conditions) {
-
-                    int increase = data.getInt("value");
-
-                    Predicate<Entity> condition = data.get("condition");
-
-                    newValue = changeThirst(newValue,condition.test(entity),increase);
-
-                }
-
-                for (SerializableData.Instance data: reduce_conditions) {
-
-                    int reduce = data.getInt("value");
-
-                    Predicate<Entity> condition = data.get("condition");
-
-                    newValue = changeThirst(newValue,condition.test(entity),-reduce);
-
-                }
-
-                resource.setValue(
-                        Math.clamp(newValue,resource.getMin(),resource.getMax())
-                );
-            }
-            case null, default -> throw new IllegalStateException("Unexpected value: " + power.getType(entity));
-        }
-        if (oldValue != newValue) {
-
-
-            PowerHolderComponent.syncPower(entity,power);
-        }
-
-
-    }
-
-
-    private static int changeThirst(int oldValue, boolean condition, int value) {
-        int decrement = condition ? value : 0;
-
-        return oldValue + decrement;
-    }
-
-    public static ActionTypeFactory<Entity> getFactory() {
-        return new ActionTypeFactory<>(
-                PondspawnOrigin.id("thirst_handler"),
-                new SerializableData()
+    public static final TypedDataObjectFactory<ThirstHandlerActionType> DATA_FACTORY = TypedDataObjectFactory.simple(
+            new SerializableData()
                         .add("resource", ApoliDataTypes.POWER_REFERENCE)
                         .add("reduce_on", SerializableDataType.list(
                                 SerializableDataType.compound(
@@ -97,16 +45,85 @@ public class ThirstHandlerActionType {
                                         (instance,data) -> instance
                                 )
                             ),
-                        List.of())
-                ,
+                        List.of()),
+            data -> new ThirstHandlerActionType(
+                    data.get("resource"),
+                    data.get("reduce_on"),
+                    data.get("increase_on")
+            ),
+            (actionType,serializableData) -> serializableData.instance()
+                    .set("resource",actionType.resource)
+                    .set("reduce_on",actionType.reduceConditions)
+                    .set("increase_on",actionType.increaseConditions)
 
-                (data, entity) -> action(
-                        entity,
-                        data.get("resource"),
-                        data.get("reduce_on"),
-                        data.get("increase_on")
-                )
-        );
+    );
+
+
+
+    private final PowerReference resource;
+    private final List<SerializableData.Instance> reduceConditions;
+    private final List<SerializableData.Instance> increaseConditions;
+
+    public ThirstHandlerActionType(PowerReference resource, List<SerializableData.Instance> reduceConditions, List<SerializableData.Instance> increaseConditions) {
+        this.resource = resource;
+        this.reduceConditions = reduceConditions;
+        this.increaseConditions = increaseConditions;
     }
+
+
+    @Override
+    public void accept(EntityActionContext context) {
+
+        Entity entity = context.entity();
+        PowerType powerType = resource.getNullablePowerType(entity);
+
+        int oldValue;
+        int newValue;
+
+
+        oldValue = PowerUtil.getResourceValue(powerType);
+        newValue = oldValue;
+
+
+//        for (SerializableData.Instance data: increaseConditions) {
+//
+//            int increase = data.getInt("value");
+//
+//            Predicate<Entity> condition = data.get("condition");
+//
+//            newValue = changeThirst(newValue,condition.test(entity),increase);
+//
+//        }
+//
+//        for (SerializableData.Instance data: reduceConditions) {
+//
+//            int reduce = data.getInt("value");
+//
+//            Predicate<Entity> condition = data.get("condition");
+//
+//            newValue = changeThirst(newValue,condition.test(entity),-reduce);
+//
+//        }
+
+        PowerUtil.setResourceValue(powerType,newValue);
+        if (oldValue != newValue) {
+            PowerHolderComponent.syncPower(entity,resource);
+        }
+
+
+    }
+
+    private static int changeThirst(int oldValue, boolean condition, int value) {
+        int decrement = condition ? value : 0;
+
+        return oldValue + decrement;
+    }
+
+    @Override
+    public @NotNull ActionConfiguration<?> getConfig() {
+        return ModActionTypes.THIRST_HANDLER;
+    }
+
+    //
 
 }

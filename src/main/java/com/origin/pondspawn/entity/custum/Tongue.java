@@ -70,6 +70,7 @@ public class Tongue extends Entity {
     public Tongue(EntityType<?> type, World world) {
         super(type, world);
 
+
         this.ignoreCameraFrustum = true;
 
     }

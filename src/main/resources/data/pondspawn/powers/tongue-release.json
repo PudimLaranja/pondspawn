@@ -56,16 +56,25 @@
     "type": "origins:active_self",
     "entity_action": {
       "type": "origins:execute_command",
-      "command": "say AAAAAAAAA"
+      "command": "tongueJump"
     },
     "key": {
       "key": "key.jump"
     },
     "condition": {
-      "type": "apoli:resource",
-      "resource": "pondspawn:tongue-release_pressed",
-      "comparison": ">",
-      "compare_to": 0
+      "type": "origins:all_of",
+      "conditions": [
+        {
+          "type": "apoli:resource",
+          "resource": "pondspawn:tongue-release_pressed",
+          "comparison": ">",
+          "compare_to": 0
+        },
+        {
+          "type": "origins:nbt",
+          "nbt": "{OnGround:0b}"
+        }
+      ]
     }
   },
 

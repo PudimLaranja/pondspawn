@@ -15,7 +15,7 @@
             "type": "origins:resource",
             "resource": "pondspawn:moisture",
             "comparison": ">",
-            "compare_to": 1875
+            "compare_to": 1250
           },
           {
             "type": "origins:resource",
@@ -36,13 +36,13 @@
             "type": "origins:resource",
             "resource": "pondspawn:moisture",
             "comparison": "<=",
-            "compare_to": 1875
+            "compare_to": 1250
           },
           {
             "type": "origins:resource",
             "resource": "pondspawn:moisture",
             "comparison": ">",
-            "compare_to": 1250
+            "compare_to": 625
           },
           {
             "type": "origins:resource",
@@ -63,13 +63,13 @@
             "type": "origins:resource",
             "resource": "pondspawn:moisture",
             "comparison": "<=",
-            "compare_to": 1250
+            "compare_to": 625
           },
           {
             "type": "origins:resource",
             "resource": "pondspawn:moisture",
             "comparison": ">",
-            "compare_to": 625
+            "compare_to": 312
           },
           {
             "type": "origins:resource",
@@ -90,7 +90,7 @@
             "type": "origins:resource",
             "resource": "pondspawn:moisture",
             "comparison": "<=",
-            "compare_to": 625
+            "compare_to": 312
           },
           {
             "type": "origins:resource",
@@ -112,7 +112,7 @@
             "type": "origins:resource",
             "resource": "pondspawn:moisture",
             "comparison": ">",
-            "compare_to": 1875
+            "compare_to": 1250
           },
           {
             "type": "origins:resource",
@@ -133,13 +133,13 @@
             "type": "origins:resource",
             "resource": "pondspawn:moisture",
             "comparison": "<=",
-            "compare_to": 1875
+            "compare_to": 1250
           },
           {
             "type": "origins:resource",
             "resource": "pondspawn:moisture",
             "comparison": ">",
-            "compare_to": 1250
+            "compare_to": 625
           },
           {
             "type": "origins:resource",
@@ -160,13 +160,13 @@
             "type": "origins:resource",
             "resource": "pondspawn:moisture",
             "comparison": "<=",
-            "compare_to": 1250
+            "compare_to": 625
           },
           {
             "type": "origins:resource",
             "resource": "pondspawn:moisture",
             "comparison": ">",
-            "compare_to": 625
+            "compare_to": 312
           },
           {
             "type": "origins:resource",
@@ -187,7 +187,7 @@
             "type": "origins:resource",
             "resource": "pondspawn:moisture",
             "comparison": "<=",
-            "compare_to": 625
+            "compare_to": 312
           },
           {
             "type": "origins:resource",

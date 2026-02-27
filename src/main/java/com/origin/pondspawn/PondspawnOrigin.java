@@ -1,8 +1,8 @@
 package com.origin.pondspawn;
 
 import com.origin.pondspawn.init.*;
-import com.origin.pondspawn.origins.init.ModConditions;
-import com.origin.pondspawn.origins.init.ModEntityActions;
+import com.origin.pondspawn.origins.init.ModActionTypes;
+import com.origin.pondspawn.origins.init.ModConditionTypes;
 import com.origin.pondspawn.util.TickScheduler;
 import com.origin.pondspawn.weightSystem.WeightManager;
 import net.fabricmc.api.ModInitializer;
@@ -36,8 +36,8 @@ public class PondspawnOrigin implements ModInitializer {
         ModItems.load();
         ModCommands.load();
         ModEntities.load();
-        ModEntityActions.register();
-        ModConditions.register();
+        ModConditionTypes.register();
+        ModActionTypes.register();
         LOGGER.info("Loaded:]");
 
 	}
