@@ -5,7 +5,7 @@ import com.origin.pondspawn.entity.model.TongueModel;
 import com.origin.pondspawn.entity.model.TongueTipModel;
 import com.origin.pondspawn.entity.renderer.TongueRenderer;
 import com.origin.pondspawn.entity.renderer.TongueTipRenderer;
-import com.origin.pondspawn.init.ModEntities;
+import com.origin.pondspawn.init.ModEntityTypes;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
@@ -24,12 +24,12 @@ public class ModEntitiesClient {
 
     public static void load() {
         EntityRendererRegistry.register(
-                ModEntities.TONGUE_ENTITY_TYPE,
+                ModEntityTypes.TONGUE_ENTITY_TYPE,
                 TongueRenderer::new
         );
 
         EntityRendererRegistry.register(
-                ModEntities.TONGUE_TIP_ENTITY_TYPE,
+                ModEntityTypes.TONGUE_TIP_ENTITY_TYPE,
                 TongueTipRenderer::new
         );
 

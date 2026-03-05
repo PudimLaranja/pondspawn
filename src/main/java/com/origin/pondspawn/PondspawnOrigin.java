@@ -3,15 +3,20 @@ package com.origin.pondspawn;
 import com.origin.pondspawn.init.*;
 import com.origin.pondspawn.origins.init.ModActionTypes;
 import com.origin.pondspawn.origins.init.ModConditionTypes;
+import com.origin.pondspawn.origins.init.ModPowerTypes;
 import com.origin.pondspawn.util.TickScheduler;
 import com.origin.pondspawn.weightSystem.WeightManager;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 
 public class PondspawnOrigin implements ModInitializer {
@@ -35,9 +40,24 @@ public class PondspawnOrigin implements ModInitializer {
 
         ModItems.load();
         ModCommands.load();
-        ModEntities.load();
+        ModEntityTypes.load();
         ModConditionTypes.register();
         ModActionTypes.register();
+        ModPowerTypes.register();
+
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            for (ServerWorld world : server.getWorlds()) {
+                world.iterateEntities().forEach(entity -> {
+                    if (
+                            List.of(
+                                    ModEntityTypes.TONGUE_ENTITY_TYPE,
+                                    ModEntityTypes.TONGUE_TIP_ENTITY_TYPE
+                            ).contains(entity.getType())) {
+                        entity.kill();
+                    }
+                });
+            }
+        });
         LOGGER.info("Loaded:]");
 
 	}

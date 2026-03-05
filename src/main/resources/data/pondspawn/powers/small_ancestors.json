@@ -1,0 +1,54 @@
+{
+  "type": "origins:multiple",
+
+  "name": "§e§nSmall Ancestors",
+  "description": "Your ancestors who evolved from frogs got a bit of height compared to their original form. But they and you, are still really small.",
+
+  "badges": [
+    {
+      "sprite": "origins:textures/gui/badge/info.png",
+      "text": "You are 1.5 Blocks tall."
+    }
+  ],
+
+
+  "scale": {
+    "type": "origins:action_on_callback",
+    "entity_action_chosen": {
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "origins:execute_command",
+          "command": "scale set pehkui:height 0.66 @s"
+        },
+        {
+          "type": "origins:execute_command",
+          "command": "scale set pehkui:model_width 0.66 @s"
+        },
+        {
+          "type": "origins:execute_command",
+          "command": "scale set pehkui:hitbox_width 0.8 @s"
+        },
+        {
+          "type": "origins:execute_command",
+          "command": "scale set pehkui:knockback 0.66 @s"
+        },
+        {
+          "type": "origins:execute_command",
+          "command": "scale persist set true @s"
+        }
+      ]
+    },
+    "entity_action_lost": {
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "origins:execute_command",
+          "command": "scale reset @s"
+        }
+      ]
+    }
+  }
+
+
+}

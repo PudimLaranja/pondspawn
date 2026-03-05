@@ -19,7 +19,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector2d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,7 +31,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Mixin(PlayerEntity.class)
-public class PlayerEntityMixin implements PlayerWithTongueData {
+public class PlayerWithTongueEntityMixin implements PlayerWithTongueData {
 
     @Unique private Tongue tongueEntity;
     @Unique @Nullable
@@ -180,7 +179,7 @@ public class PlayerEntityMixin implements PlayerWithTongueData {
 
             if (this.pondspawn$getTarget() != null) {
                 Entity entity = this.pondspawn$getTarget();
-                assert entity != null;
+                if (entity == null) return;
 
                 applyTongueConnectionPhysics(
                         player,entity,

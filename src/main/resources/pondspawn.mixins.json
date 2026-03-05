@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "ExampleMixin",
-    "PlayerEntityMixin"
+    "EntityPowersMixin",
+    "PlayerWithTongueEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

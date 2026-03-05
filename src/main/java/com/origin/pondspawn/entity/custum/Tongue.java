@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.block.v1.BlockFunctionalityTags;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.brain.MemoryQuery;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.data.DataTracker;
@@ -22,13 +23,16 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 import oshi.util.Util;
 
 import java.util.*;
@@ -57,6 +61,9 @@ public class Tongue extends Entity {
     private static final TrackedData<Float> ANIMATION_CONTROLLER = DataTracker
             .registerData(Tongue.class, TrackedDataHandlerRegistry.FLOAT);
 
+    private static final TrackedData<Optional<UUID>> TONGUE_TIP_UUID = DataTracker
+            .registerData(Tongue.class,TrackedDataHandlerRegistry.OPTIONAL_UUID);
+
     public TargetTypes targetMode = TargetTypes.DEFAULT;
     public UUID FollowEntity;
 
@@ -66,6 +73,8 @@ public class Tongue extends Entity {
     public NbtCompound data = new NbtCompound();
 
     private Runnable onRetractedCallback;
+
+    public TongueTip tongueTip;
 
     public Tongue(EntityType<?> type, World world) {
         super(type, world);
@@ -86,10 +95,17 @@ public class Tongue extends Entity {
     }
 
     @Override
+    public void kill() {
+        if (tongueTip != null) tongueTip.kill();
+        super.kill();
+    }
+
+    @Override
     protected void initDataTracker(DataTracker.Builder builder) {
         builder.add(TARGET_TYPE, TargetTypes.DEFAULT.ordinal());
         builder.add(ENTITY_TARGET_UUID, Optional.empty());
         builder.add(ANIMATION_CONTROLLER,0f);
+        builder.add(TONGUE_TIP_UUID,Optional.empty());
     }
 
     @Override
@@ -133,6 +149,7 @@ public class Tongue extends Entity {
             Vec3d pos = player.getEyePos();
 
             this.setPosition(dir.multiply(TONGUE_LENGTH).add(pos));
+            tongueTip.setPosition(this.getPos());
 
             if (this.getAnimationController() >= 0.8f) {
                 ClearTongue.killTongue(player);
@@ -261,8 +278,15 @@ public class Tongue extends Entity {
         return this.dataTracker.get(ANIMATION_CONTROLLER);
     }
 
+    public @Nullable UUID getTipUUID() {
+        return this.dataTracker.get(TONGUE_TIP_UUID).orElse(null);
+    }
+
+    public void setTongueTipUUID(UUID uuid) {
+        this.dataTracker.set(TONGUE_TIP_UUID, Optional.ofNullable(uuid));
+    }
+
     public void setTongueMode(TongueModes tongueMode) {
-        //messagePlayer(tongueMode.asString());
         if (tongueMode == TongueModes.LOCK) {
             if (this.getWorld() instanceof ServerWorld world) {
                 if (world.getEntity(this.getEntityTarget()) instanceof  PlayerEntity player) {

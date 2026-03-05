@@ -3,6 +3,7 @@ package com.origin.pondspawn.entity.renderer;
 import com.origin.pondspawn.PondspawnOrigin;
 import com.origin.pondspawn.entity.custum.Tongue;
 import com.origin.pondspawn.entity.ModEntitiesClient;
+import com.origin.pondspawn.entity.custum.TongueTip;
 import com.origin.pondspawn.entity.enums.TargetTypes;
 import com.origin.pondspawn.entity.model.TongueModel;
 import net.minecraft.client.MinecraftClient;
@@ -25,7 +26,6 @@ import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.annotation.Target;
 import java.util.UUID;
 
 
@@ -39,47 +39,12 @@ public class TongueRenderer extends EntityRenderer<Tongue> {
     private final TongueModel model;
 
 
-    private static Vec3d to_Vec3d(Vector3f vec) {
-        return new Vec3d(
-                vec.x,
-                vec.y,
-                vec.z
-        );
-    }
-
     public TongueRenderer(EntityRendererFactory.Context ctx) {
         super(ctx);
 
         this.model = new TongueModel(ctx.getPart(ModEntitiesClient.TONGUE_MODEL_LAYER));
         this.shadowRadius = 0.0f;
     }
-
-    private Vec3d getPlayerMouthPosition(PlayerEntity player , float tickDelta) {
-       Vec3d eyePos = player.getLerpedPos(tickDelta).add(
-               0,
-               player.getEyeHeight(player.getPose()) - 0.4,
-               0
-       );
-
-       float headYaw = (float) Math.toRadians(player.getYaw(tickDelta));
-       float headPitch = (float) Math.toRadians(player.getPitch(tickDelta));
-
-       Quaternionf headRotation = new Quaternionf();
-
-       headRotation.rotateY(-headYaw);
-
-        headRotation.rotateX(headPitch);
-
-
-        Vector3f neckOffset = new Vector3f(0f,0.15f,0f);
-        Vector3f mouthOffset = new Vector3f(0f,0f,0.24f);
-
-        neckOffset.rotate(headRotation);
-        mouthOffset.rotate(headRotation);
-
-       return eyePos.add(to_Vec3d(neckOffset)).add(to_Vec3d(mouthOffset));
-    }
-
 
     @Override
     public Identifier getTexture(Tongue entity) {
@@ -103,6 +68,7 @@ public class TongueRenderer extends EntityRenderer<Tongue> {
 
         return matrices;
     }
+
 
     @Override
     public void render(Tongue entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
@@ -145,11 +111,11 @@ public class TongueRenderer extends EntityRenderer<Tongue> {
                         clientPlayer.getUuid() == player.getUuid() &&
                         client.options.getPerspective().isFirstPerson()
                     ) {
-                        Vec3d mouthPosition = getPlayerMouthPosition(player,tickDelta);
+                        Vec3d mouthPosition = Common.getPlayerMouthPosition(player,tickDelta);
                         Vec3d dir = entityPos.subtract(mouthPosition).normalize();
                         targetCoordinate = mouthPosition.add(dir.multiply(0.4));
                     } else {
-                        targetCoordinate = getPlayerMouthPosition(player,tickDelta);
+                        targetCoordinate = Common.getPlayerMouthPosition(player,tickDelta);
                     }
 
 
@@ -157,6 +123,7 @@ public class TongueRenderer extends EntityRenderer<Tongue> {
                 }
             }
         }
+
 
         matrices.push();
 

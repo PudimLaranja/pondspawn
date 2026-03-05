@@ -28,7 +28,7 @@ public class ChangePhysics {
 
         PlayerPhysicsConfig.jumpVector = new Vec3d(0.0,upward,forward);
 
-        assert context.getSource().getEntity() != null;
+        if (context.getSource().getEntity() == null) return -1;
         context.getSource().getEntity().sendMessage(Text.literal(PlayerPhysicsConfig.jumpVector.toString()));
         return 0;
     }
@@ -36,7 +36,7 @@ public class ChangePhysics {
     private static int reset(CommandContext<ServerCommandSource> context) {
         PlayerPhysicsConfig.jumpVector = startValue;
 
-        assert context.getSource().getEntity() != null;
+        if (context.getSource().getEntity() == null) return -1;
         context.getSource().getEntity().sendMessage(Text.literal(PlayerPhysicsConfig.jumpVector.toString()));
 
         return 0;

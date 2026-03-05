@@ -4,9 +4,10 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.origin.pondspawn.PlayerWithTongueData;
 import com.origin.pondspawn.entity.custum.Tongue;
+import com.origin.pondspawn.entity.custum.TongueTip;
 import com.origin.pondspawn.entity.enums.TargetTypes;
 import com.origin.pondspawn.entity.enums.TongueModes;
-import com.origin.pondspawn.init.ModEntities;
+import com.origin.pondspawn.init.ModEntityTypes;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.BlockPosArgumentType;
@@ -45,7 +46,7 @@ public class TongueCommand {
             entity = EntityArgumentType.getEntity(context,"entity");
         }
 
-        assert entity != null;
+        if (entity == null) return -1;
         World world = entity.getWorld();
 
         if (entity instanceof PlayerEntity player) {
@@ -59,7 +60,7 @@ public class TongueCommand {
                 ((PlayerWithTongueData) player).pondspawn$setTongueEntity(null);
             }
 
-            Tongue tongueEntity = new Tongue(ModEntities.TONGUE_ENTITY_TYPE, world);
+            Tongue tongueEntity = new Tongue(ModEntityTypes.TONGUE_ENTITY_TYPE, world);
             Vec3d position;
             if (raycast) {
                 position = getRaycastPos(player,tongueEntity,world);
@@ -86,9 +87,11 @@ public class TongueCommand {
             tongueEntity.setEntityTarget(entity.getUuid());
             tongueEntity.setPosition(position);
 
+            TongueTip tip = TongueTip.factory(world,tongueEntity);
             tongueEntity.finish();
 
             world.spawnEntity(tongueEntity);
+            world.spawnEntity(tip);
 
             return 1;
 

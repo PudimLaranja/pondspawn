@@ -1,0 +1,11 @@
+{
+  "name": "§c§nFragile",
+  "description": "You have 3 less hearts of health than humans.",
+  "type": "origins:attribute",
+  "modifier": {
+    "id": "*:*",
+    "attribute": "minecraft:generic.max_health",
+    "amount": -6.0,
+    "operation": "add_value"
+  }
+}

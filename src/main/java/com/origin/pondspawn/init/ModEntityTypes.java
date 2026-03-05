@@ -7,9 +7,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
 
-public class ModEntities {
+public class ModEntityTypes {
 
     public static final EntityType<Tongue> TONGUE_ENTITY_TYPE = Registry.register(
             Registries.ENTITY_TYPE,
