@@ -44,6 +44,7 @@ public class PondspawnOrigin implements ModInitializer {
         ModConditionTypes.register();
         ModActionTypes.register();
         ModPowerTypes.register();
+        ModParticles.register();
 
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             for (ServerWorld world : server.getWorlds()) {
@@ -51,7 +52,9 @@ public class PondspawnOrigin implements ModInitializer {
                     if (
                             List.of(
                                     ModEntityTypes.TONGUE_ENTITY_TYPE,
-                                    ModEntityTypes.TONGUE_TIP_ENTITY_TYPE
+                                    ModEntityTypes.TONGUE_TIP_ENTITY_TYPE,
+                                    ModEntityTypes.TONGUE_SCARF_ENTITY_TYPE,
+                                    ModEntityTypes.TONGUE_SCARF_MOUTH_ENTITY_TYPE
                             ).contains(entity.getType())) {
                         entity.kill();
                     }

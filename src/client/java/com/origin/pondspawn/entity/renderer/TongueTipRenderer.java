@@ -1,15 +1,10 @@
 package com.origin.pondspawn.entity.renderer;
 
-import carpet.mixins.Player_antiCheatDisabledMixin;
 import com.origin.pondspawn.PondspawnOrigin;
-import com.origin.pondspawn.entity.ModEntitiesClient;
+import com.origin.pondspawn.init.ModEntitiesClient;
 import com.origin.pondspawn.entity.custum.Tongue;
 import com.origin.pondspawn.entity.custum.TongueTip;
-import com.origin.pondspawn.entity.enums.TargetTypes;
-import com.origin.pondspawn.entity.model.TongueModel;
 import com.origin.pondspawn.entity.model.TongueTipModel;
-import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -17,9 +12,7 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -63,29 +56,15 @@ public class TongueTipRenderer extends EntityRenderer<TongueTip> {
 
 
         if (parentUuid != null && world instanceof ClientWorld clientWorld) {
-            if (Common.getEntityByUuid(clientWorld, parentUuid) instanceof Tongue tongue
-                && tongue.getTargetMode() != TargetTypes.AIR
-            ) {
+            if (Common.getEntityByUuid(clientWorld, parentUuid) instanceof Tongue tongue) {
 
 
                 if (Common.getEntityByUuid(clientWorld, tongue.getEntityTarget()) instanceof PlayerEntity player) {
 
                     Vec3d mouthPos = Common.getPlayerMouthPosition(player, tickDelta);
                     Vec3d tipPos = entity.getLerpedPos(tickDelta);
-                    Vec3d tonguePos = tongue.getLerpedPos(tickDelta);
 
                     float animation = 1f - tongue.getAnimationController();
-
-                    if (tongue.getTargetMode() == TargetTypes.AIR) {
-                        Vec3d translateAmount = tipPos.subtract(entity.getLerpedPos(tickDelta));
-
-                        matrices.translate(
-                                translateAmount.x,
-                                translateAmount.y,
-                                translateAmount.z
-                        );
-
-                    }
 
                     Vec3d animationOffset = mouthPos.subtract(tipPos).multiply(animation);
 

@@ -36,6 +36,7 @@ public class ClearTongue {
             ((PlayerWithTongueData) player).pondspawn$setTarget(null);
             tongue.retract(() -> {
                 ((PlayerWithTongueData) player).pondspawn$setTongueEntity(null);
+                ((PlayerWithTongueData) player).pondspawn$setTongueOut(false);
             });
         }
     }

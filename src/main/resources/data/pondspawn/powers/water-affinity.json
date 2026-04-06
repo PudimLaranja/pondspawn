@@ -9,6 +9,12 @@
     "modifier": {
       "operation": "multiply_total_multiplicative",
       "amount": 2
+    },
+    "condition": {
+      "type": "origins:resource",
+      "resource": "pondspawn:moisture",
+      "comparison": ">",
+      "compare_to": 0
     }
   },
 

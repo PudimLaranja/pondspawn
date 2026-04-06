@@ -2,6 +2,8 @@ package com.origin.pondspawn.init;
 
 import com.origin.pondspawn.PondspawnOrigin;
 import com.origin.pondspawn.entity.custum.Tongue;
+import com.origin.pondspawn.entity.custum.TongueScarf;
+import com.origin.pondspawn.entity.custum.TongueScarfMouth;
 import com.origin.pondspawn.entity.custum.TongueTip;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -26,6 +28,24 @@ public class ModEntityTypes {
                     .create(TongueTip::new,SpawnGroup.MISC)
                     .dimensions(0.5f,0.5f)
                     .build("tongue_tip")
+    );
+
+    public static final EntityType<TongueScarf> TONGUE_SCARF_ENTITY_TYPE = Registry.register(
+            Registries.ENTITY_TYPE,
+            PondspawnOrigin.id("tongue_scarf"),
+            EntityType.Builder
+                    .create(TongueScarf::new,SpawnGroup.MISC)
+                    .dimensions(0.5f,0.5f)
+                    .build("tongue_scarf")
+    );
+
+    public static final EntityType<TongueScarfMouth> TONGUE_SCARF_MOUTH_ENTITY_TYPE = Registry.register(
+            Registries.ENTITY_TYPE,
+            PondspawnOrigin.id("tongue_scarf_mouth"),
+            EntityType.Builder
+                    .create(TongueScarfMouth::new,SpawnGroup.MISC)
+                    .dimensions(0.5f,0.5f)
+                    .build("tongue_scarf_mouth")
     );
 
     public static void load() {}

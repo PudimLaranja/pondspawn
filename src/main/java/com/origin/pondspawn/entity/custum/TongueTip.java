@@ -41,7 +41,7 @@ public class TongueTip extends Entity{
     public void tick() {
         super.tick();
 
-        if (this.parent != null && this.parent.getTargetMode() != TargetTypes.AIR) {
+        if (this.parent != null) {
             this.setPosition(parent.getPos());
         }
     }

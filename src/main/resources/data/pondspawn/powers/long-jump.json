@@ -1,0 +1,125 @@
+{
+  "type": "origins:multiple",
+
+  "name": "Long jump",
+  "description": "",
+
+  "shift-pressed": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 3,
+    "start_value": 0,
+
+    "min_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:all_of",
+        "conditions": [
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:long-jump_w-pressed",
+            "comparison": ">",
+            "compare_to": 0
+          },
+          {
+            "type": "origins:nbt",
+            "nbt": "{OnGround:1b}"
+          },
+          {
+            "type": "origins:resource",
+            "resource": "pondspawn:super-jump_input-forgiveness",
+            "comparison": ">",
+            "compare_to": 0
+          }
+        ]
+      },
+      "if_action": {
+        "type": "origins:and",
+        "actions": [
+          {
+            "type": "origins:change_resource",
+            "resource": "pondspawn:super-jump_super-jump-resource",
+            "operation": "set",
+            "change": 0
+          },
+          {
+            "type": "pondspawn:execute_commands",
+            "commands": "push 2.5 0 0.2 0.8"
+          },
+          {
+            "type": "origins:change_resource",
+            "resource": "pondspawn:jump-effect_resource",
+            "operation": "add",
+            "change": 100
+          },
+          {
+            "type": "origins:change_resource",
+            "resource": "pondspawn:moisture",
+            "operation": "add",
+            "change": -40
+          }
+        ]
+      }
+    }
+  },
+
+  "w-pressed": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 3,
+    "start_value": 0
+  },
+
+
+  "shift-pressed-increase": {
+    "type": "origins:active_self",
+    "entity_action": {
+      "type": "origins:change_resource",
+      "resource": "pondspawn:long-jump_shift-pressed",
+      "operation": "set",
+      "change": 3
+    },
+    "key": {
+      "key": "key.sneak",
+      "continuous": true
+    }
+  },
+
+  "w-pressed-increase": {
+    "type": "origins:active_self",
+    "entity_action": {
+      "type": "origins:change_resource",
+      "resource": "pondspawn:long-jump_w-pressed",
+      "operation": "set",
+      "change": 3
+    },
+    "key": {
+      "key": "key.forward",
+      "continuous": true
+    }
+  },
+
+
+  "pressed-decrease": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "origins:change_resource",
+          "resource": "pondspawn:long-jump_shift-pressed",
+          "operation": "add",
+          "change": -1
+        },
+        {
+          "type": "origins:change_resource",
+          "resource": "pondspawn:long-jump_w-pressed",
+          "operation": "add",
+          "change": -1
+        }
+      ]
+
+    }
+  }
+}

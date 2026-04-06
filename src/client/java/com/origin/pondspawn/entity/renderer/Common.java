@@ -31,7 +31,7 @@ public class Common {
 
 
         Vector3f neckOffset = new Vector3f(0f,0.15f,0f);
-        Vector3f mouthOffset = new Vector3f(0f,0f,0.24f);
+        Vector3f mouthOffset = new Vector3f(0f,0f,0.20f);
 
         neckOffset.rotate(headRotation);
         mouthOffset.rotate(headRotation);

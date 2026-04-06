@@ -4,14 +4,22 @@ import com.origin.pondspawn.PlayerWithTongueData;
 import com.origin.pondspawn.PondspawnOrigin;
 import com.origin.pondspawn.command.ClearTongue;
 import com.origin.pondspawn.entity.custum.Tongue;
-import com.origin.pondspawn.entity.enums.TargetTypes;
+import com.origin.pondspawn.entity.custum.TongueScarf;
 import com.origin.pondspawn.entity.enums.TongueModes;
 import com.origin.pondspawn.init.ModComponents;
 import com.origin.pondspawn.weightSystem.WeightManager;
 import io.github.apace100.origins.component.PlayerOriginComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.MagmaCubeEntity;
+import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
@@ -34,13 +42,40 @@ import java.util.UUID;
 public class PlayerWithTongueEntityMixin implements PlayerWithTongueData {
 
     @Unique private Tongue tongueEntity;
+    @Unique @Nullable TongueScarf tongueScarfEntity;
     @Unique @Nullable
     private Entity Target = null;
 
     @Unique boolean jumpAllowed = false;
 
-    @Unique
-    @Nullable Runnable teleportCallback = null;
+
+    @Unique private static final TrackedData<Boolean> TONGUE_OUT = DataTracker
+            .registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
+    @Inject(method = "initDataTracker", at = @At("HEAD"))
+    protected void initDataTracker(DataTracker.Builder builder, CallbackInfo ci) {
+        builder.add(TONGUE_OUT,false);
+    }
+
+    @Override
+    public boolean pondspawn$isTongueOut() {
+        return ((PlayerEntity) (Object) this).getDataTracker().get(TONGUE_OUT);
+    }
+
+    @Override
+    public void pondspawn$setTongueOut(boolean tongueOut) {
+        ((PlayerEntity) (Object) this).getDataTracker().set(TONGUE_OUT,tongueOut);
+    }
+
+    @Override
+    public void pondspawn$setScarfEntity(TongueScarf scarf) {
+        this.tongueScarfEntity = scarf;
+    }
+
+    @Override
+    public TongueScarf pondspawn$getScarfEntity() {
+        return this.tongueScarfEntity;
+    }
 
     @Override
     public boolean pondspawn$jumpAllowed() {
@@ -105,6 +140,8 @@ public class PlayerWithTongueEntityMixin implements PlayerWithTongueData {
         return this.tongueEntity;
     }
 
+
+
     @ModifyVariable(
             method = "handleFallDamage",
             at = @At("HEAD"),
@@ -151,13 +188,11 @@ public class PlayerWithTongueEntityMixin implements PlayerWithTongueData {
 
         if (tongue != null && !tongue.isRemoved()/* && !player.getWorld().isClient()*/ ) {
             if (tongue.getAnimationController() != 1.0) return;
-            if (tongue.getTargetMode() == TargetTypes.AIR) return;
 
             double swingMaxSpeed = 0.6;
             double pullMaxSpeed = 1.2;
 
             double tongueLength = 0;
-            double maxVelocity = 0;
 
             player.setNoGravity(false);
 
@@ -165,15 +200,12 @@ public class PlayerWithTongueEntityMixin implements PlayerWithTongueData {
             switch (tongue.tongueMode) {
                 case LOOSE, DEFAULT -> {
                     tongueLength = Tongue.TONGUE_LENGTH;
-                    maxVelocity = swingMaxSpeed;
                 }
                 case LOCK -> {
                     tongueLength = Math.max(tongue.getLockLength() - (!player.isOnGround() ? 3.0 : 0),1);
-                    maxVelocity = swingMaxSpeed;
                 }
                 case PULL -> {
                     tongueLength = 0.5;
-                    maxVelocity = pullMaxSpeed;
                 }
             }
 
@@ -282,6 +314,28 @@ public class PlayerWithTongueEntityMixin implements PlayerWithTongueData {
 
         Vec3d vecToEntity = entityPos.subtract(playerPos);
         double dist = vecToEntity.length();
+
+        if (dist < 1.0) {
+            if (entity instanceof SlimeEntity slime && slime.getSize() == 0 ) {
+                entity.kill();
+                return;
+            }
+
+            if (entity instanceof MagmaCubeEntity magmaCube && magmaCube.getSize() == 0) {
+                entity.kill();
+
+                int random = (int) Math.round(Math.random() * 2);
+
+                Item item = switch (random) {
+                    case 1 -> Items.PEARLESCENT_FROGLIGHT;
+                    case 2 -> Items.VERDANT_FROGLIGHT;
+                    default -> Items.OCHRE_FROGLIGHT;
+                };
+
+                player.giveItemStack(new ItemStack(item));
+                return;
+            }
+        }
 
         // If the rope is loose (distance < max length), physics do not apply.
         if (dist <= maxLength) return;

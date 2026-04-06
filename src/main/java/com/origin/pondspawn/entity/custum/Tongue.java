@@ -1,5 +1,6 @@
 package com.origin.pondspawn.entity.custum;
 
+import com.origin.pondspawn.PlayerWithTongueData;
 import com.origin.pondspawn.command.ClearTongue;
 import com.origin.pondspawn.entity.enums.TargetTypes;
 import com.origin.pondspawn.entity.enums.TongueModes;
@@ -96,6 +97,15 @@ public class Tongue extends Entity {
 
     @Override
     public void kill() {
+        if (getEntityTarget() instanceof UUID uuid1) {
+            if (ModUtil.getEntityByUUID(this.getWorld(),uuid1) instanceof PlayerEntity player) {
+                PlayerWithTongueData tongueData = (PlayerWithTongueData) player;
+                if (tongueData.pondspawn$getTongueEntity() instanceof Tongue tongue && tongue.getUuid() == this.getUuid()) {
+                    tongueData.pondspawn$setTongueOut(false);
+                }
+            }
+        }
+
         if (tongueTip != null) tongueTip.kill();
         super.kill();
     }
@@ -138,24 +148,11 @@ public class Tongue extends Entity {
         switch (this.getTargetMode()) {
             case BLOCK -> this.checkBlock();
             case ENTITY -> this.follow_entity();
-            case AIR -> this.onAir();
             case null, default -> {}
         }
     }
 
-    private void onAir() {
-        if (ModUtil.getEntityByUUID(this.getWorld(),this.getEntityTarget()) instanceof PlayerEntity player) {
-            Vec3d dir = player.getRotationVector();
-            Vec3d pos = player.getEyePos();
 
-            this.setPosition(dir.multiply(TONGUE_LENGTH).add(pos));
-            tongueTip.setPosition(this.getPos());
-
-            if (this.getAnimationController() >= 0.8f) {
-                ClearTongue.killTongue(player);
-            }
-        }
-    }
 
     private static final TagKey<Block> C_GLASS_BLOCKS = TagKey.of(RegistryKeys.BLOCK, Identifier.of("c","glass_blocks"));
     private static final TagKey<Block> C_GLASS_PANES = TagKey.of(RegistryKeys.BLOCK, Identifier.of("c","glass_panes"));

@@ -1,0 +1,34 @@
+{
+  "type": "origins:multiple",
+
+  "name": "Tongue scarf",
+  "description": "You can wrap yourself with your tongue to make a fashionable scarf.\nWhen you are wearing your tongue scarf you become faster but also more vulnerable",
+
+  "scarf-toggle": {
+    "type": "origins:active_self",
+    "entity_action": {
+      "type": "origins:execute_command",
+      "command": "scarf toggle"
+    },
+    "condition": {"type": "origins:sneaking"}
+  },
+
+  "fragile": {
+    "type": "origins:modify_damage_taken",
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "amount": 1.5
+    },
+    "condition": {"type": "pondspawn:wearing_tongue_scarf"}
+  },
+
+  "effect-when-wearing-scarf": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:execute_command",
+      "command": "effect give @s speed 1 0 true"
+    },
+    "condition": {"type": "pondspawn:wearing_tongue_scarf"}
+  }
+}

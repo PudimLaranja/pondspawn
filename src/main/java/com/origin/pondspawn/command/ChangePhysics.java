@@ -56,12 +56,10 @@ public class ChangePhysics {
                                 .executes(ChangePhysics::reset)
                 )
                 .then(
-                    CommandManager.argument("forward", DoubleArgumentType.doubleArg())
-                            .then(
-                                    CommandManager.argument("upward", DoubleArgumentType.doubleArg())
-                                            .executes(ChangePhysics::commandLogic)
-                            )
-                )
+                    CommandManager.argument("forward", DoubleArgumentType.doubleArg()).then(
+                    CommandManager.argument("upward", DoubleArgumentType.doubleArg())
+                        .executes(ChangePhysics::commandLogic)
+                ))
 
             );
         });

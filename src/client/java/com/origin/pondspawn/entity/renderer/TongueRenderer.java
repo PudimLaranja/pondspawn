@@ -2,9 +2,7 @@ package com.origin.pondspawn.entity.renderer;
 
 import com.origin.pondspawn.PondspawnOrigin;
 import com.origin.pondspawn.entity.custum.Tongue;
-import com.origin.pondspawn.entity.ModEntitiesClient;
-import com.origin.pondspawn.entity.custum.TongueTip;
-import com.origin.pondspawn.entity.enums.TargetTypes;
+import com.origin.pondspawn.init.ModEntitiesClient;
 import com.origin.pondspawn.entity.model.TongueModel;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -21,8 +19,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,18 +94,11 @@ public class TongueRenderer extends EntityRenderer<Tongue> {
 
                 if (targetEntity instanceof PlayerEntity player) {
 
-                    if (entity.getTargetMode() == TargetTypes.AIR) {
-                        Vec3d dir = player.getRotationVec(tickDelta);
-                        entityPos = dir.multiply(Tongue.TONGUE_LENGTH)
-                        .add(player.getLerpedPos(tickDelta));
-                        targetCoordinate = entityPos.add(0.0,1.0,0.0);
-                    }
-
                     MinecraftClient client = MinecraftClient.getInstance();
                     if (
                         client.player instanceof ClientPlayerEntity clientPlayer &&
                         clientPlayer.getUuid() == player.getUuid() &&
-                        client.options.getPerspective().isFirstPerson()
+                        client.options.getPerspective().isFirstPerson() && false
                     ) {
                         Vec3d mouthPosition = Common.getPlayerMouthPosition(player,tickDelta);
                         Vec3d dir = entityPos.subtract(mouthPosition).normalize();
@@ -143,18 +132,6 @@ public class TongueRenderer extends EntityRenderer<Tongue> {
         float targetPitch = (float) MathHelper.atan2(
                 directionToTarget.y,horizontalDistance
         );
-
-        if (entity.getTargetMode() == TargetTypes.AIR) {
-
-            Vec3d translateAmount = entityPos.subtract(entity.getLerpedPos(tickDelta));
-
-            matrices.translate(
-                    translateAmount.x,
-                    translateAmount.y,
-                    translateAmount.z
-            );
-
-        }
 
         matrices.multiply(RotationAxis.POSITIVE_Y.rotation(-targetYaw));
         matrices.multiply(RotationAxis.POSITIVE_X.rotation(-targetPitch));

@@ -1,0 +1,60 @@
+{
+  "type": "origins:multiple",
+  "hidden": true,
+
+  "resource": {
+    "type": "origins:resource",
+    "start_value": 0,
+    "min": 0,
+    "max": 20
+  },
+
+  "apply_effect": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:if_else_list",
+      "actions": [
+        {
+          "condition": {
+            "type": "origins:nbt",
+            "nbt": "{OnGround:1b}"
+          },
+          "action": {
+            "type": "origins:change_resource",
+            "resource": "pondspawn:jump-effect_resource",
+            "operation": "set",
+            "change": 0
+          }
+        },
+        {
+          "condition": {
+            "type": "origins:constant",
+            "value": true
+          },
+          "action": {
+            "type": "origins:and",
+            "actions": [
+              {
+                "type": "execute_command",
+                "command": "particle pondspawn:frog_trail_particle ~ ~ ~ 0 0 0 5 10"
+              },
+              {
+                "type": "origins:change_resource",
+                "resource": "pondspawn:jump-effect_resource",
+                "operation": "add",
+                "change": -1
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "condition": {
+        "type": "origins:resource",
+        "resource": "pondspawn:jump-effect_resource",
+        "comparison": "!=",
+        "compare_to": 0
+    }
+  }
+}

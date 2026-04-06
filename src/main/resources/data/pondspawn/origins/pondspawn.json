@@ -8,11 +8,15 @@
     "pondspawn:moisture",
     "pondspawn:bar-effect",
     "pondspawn:moisty-skin",
-    "pondspawn:fire_weakness",
-    "pondspawn:small_ancestors",
-    "pondspawn:frog_sounds",
-    "pondspawn:water_affinity",
-    "pondspawn:fragile"
+    "pondspawn:fire-weakness",
+    "pondspawn:small-ancestors",
+    "pondspawn:frog-sounds",
+    "pondspawn:water-affinity",
+    "pondspawn:fragile",
+    "pondspawn:tongue-scarf",
+    "pondspawn:super-jump",
+    "pondspawn:long-jump",
+    "pondspawn:jump-effect"
   ],
   "icon": {
     "id":"minecraft:lily_pad"

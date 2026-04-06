@@ -64,7 +64,8 @@
       "type": "pondspawn:execute_commands",
       "commands": [
         "tongue @s",
-        "changeTongue @s pull"
+        "changeTongue @s pull",
+        "playsound minecraft:entity.frog.tongue player @s ~ ~ ~ 1000"
       ]
     },
 

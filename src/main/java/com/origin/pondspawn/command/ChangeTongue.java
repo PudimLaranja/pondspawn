@@ -54,15 +54,13 @@ public class ChangeTongue {
         ) -> {
             dispatcher.register(CommandManager.literal("changeTongue")
                     .then(
-                            CommandManager.argument("entity", EntityArgumentType.entity())
-                                    .then(
-                                            CommandManager.argument("mode", StringArgumentType.word())
-                                                    .suggests(TONGUE_MODE_SUGGESTIONS)
-                                                    .executes(ChangeTongue::commandLogic)
+                            CommandManager.argument("entity", EntityArgumentType.entity()).then(
+                            CommandManager.argument("mode", StringArgumentType.word())
+                                .suggests(TONGUE_MODE_SUGGESTIONS)
+                                .executes(ChangeTongue::commandLogic)
 
 
-                                    )
-                    )
+                    ))
             );
         });
     }

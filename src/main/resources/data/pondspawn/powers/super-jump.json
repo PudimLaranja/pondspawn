@@ -1,0 +1,197 @@
+{
+  "type": "origins:multiple",
+
+  "name": "Super Jump",
+  "description": "with your sturdy legs you can perform a variety of athletic moves others cant.\n Holding shift for a few second and then jumping allows you to perform a super jump which goes higher than a normal jump.\n when running if you crouch and then jump quickly you will perform a long jump which allows to goes farther in the direction of the jump than you normally could.",
+
+  "super-jump-resource": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 80,
+    "start_value": 0,
+    "hud_render": {
+      "sprite_location": "origins:textures/gui/community/spiderkolo/resource_bar_03.png",
+      "bar_index": 16,
+      "condition": {
+        "type": "origins:resource",
+        "resource": "pondspawn:super-jump_super-jump-resource",
+        "comparison": "!=",
+        "compare_to": 0
+      }
+    }
+  },
+
+  "zero-jump-resource": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:change_resource",
+      "resource": "pondspawn:super-jump_super-jump-resource",
+      "operation": "set",
+      "change": 0
+    },
+    "condition": {
+      "type": "apoli:all_of",
+      "conditions": [
+        {
+          "type": "apoli:any_of",
+          "conditions": [
+            {
+              "type": "origins:sneaking",
+              "inverted": true
+            },
+            {
+              "type": "origins:nbt",
+              "nbt": "{OnGround:0b}"
+            }
+          ]
+        },
+        {
+          "type": "origins:resource",
+          "resource": "pondspawn:super-jump_super-jump-resource",
+          "comparison": "!=",
+          "compare_to": 0
+        }
+      ]
+    }
+  },
+
+  "input-forgiveness": {
+    "type": "origins:resource",
+    "max": 10,
+    "min": 0,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false
+    }
+  },
+
+  "remove-input-forgiveness": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:change_resource",
+      "resource": "pondspawn:super-jump_input-forgiveness",
+      "operation": "add",
+      "change": -1
+    },
+    "condition": {
+      "type": "apoli:all_of",
+      "conditions": [
+        {
+          "type": "origins:resource",
+          "resource": "pondspawn:super-jump_input-forgiveness",
+          "comparison": "!=",
+          "compare_to": 0
+        },
+        {
+          "type": "apoli:any_of",
+          "conditions": [
+            {
+              "type": "origins:sneaking",
+              "inverted": true
+            },
+            {
+              "type": "origins:nbt",
+              "nbt": "{OnGround:0b}"
+            }
+          ]
+        }
+      ]
+    }
+  },
+
+  "add-input-forgiveness": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:change_resource",
+      "resource": "pondspawn:super-jump_input-forgiveness",
+      "operation": "set",
+      "change": 10
+    },
+    "condition": {
+      "type": "origins:resource",
+      "resource": "pondspawn:super-jump_super-jump-resource",
+      "comparison": ">",
+      "compare_to": 70
+    }
+  },
+
+  "charge-jump-resource": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "origins:change_resource",
+          "resource": "pondspawn:super-jump_super-jump-resource",
+          "operation": "add",
+          "change": 1
+        },{
+          "type": "origins:execute_command",
+          "command": "particle pondspawn:frog_jump_particle ~ ~ ~ 0 0 0 1 2 force"
+        }
+      ]
+    },
+    "condition": {
+      "type": "apoli:all_of",
+      "conditions": [
+        {"type": "origins:sneaking"},
+        {
+          "type": "origins:nbt",
+          "nbt": "{OnGround:1b}"
+        }
+      ]
+    }
+  },
+
+  "super-jump": {
+    "type": "origins:active_self",
+    "key": {
+      "key": "key.jump"
+    },
+    "entity_action": {
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "pondspawn:execute_commands",
+          "commands": [
+            "tag @s add super_jump",
+            "schedule function pondspawn:jump 2t"
+          ]
+        },
+        {
+          "type": "origins:change_resource",
+          "resource": "pondspawn:jump-effect_resource",
+          "operation": "add",
+          "change": 100
+        },
+        {
+          "type": "origins:change_resource",
+          "resource": "pondspawn:moisture",
+          "operation": "add",
+          "change": -40
+        }
+      ]
+    },
+    "condition": {
+      "type": "origins:all_of",
+      "conditions": [
+        {
+          "type": "origins:resource",
+          "resource": "pondspawn:super-jump_input-forgiveness",
+          "comparison": ">",
+          "compare_to": 0
+        },
+        {
+          "type": "origins:resource",
+          "resource": "pondspawn:long-jump_w-pressed",
+          "comparison": "==",
+          "compare_to": 0
+        }
+      ]
+    }
+  }
+}

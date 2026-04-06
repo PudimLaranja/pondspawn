@@ -64,7 +64,11 @@ public class TongueCommand {
             Vec3d position;
             if (raycast) {
                 position = getRaycastPos(player,tongueEntity,world);
-                if (position == Vec3d.ZERO) return 0;
+                if (position == Vec3d.ZERO) {
+                    ((PlayerWithTongueData) player).pondspawn$setTongueOut(false);
+                } else {
+                    ((PlayerWithTongueData) player).pondspawn$setTongueOut(true);
+                }
             } else {
 
                 BlockPos blockPosition = BlockPosArgumentType.getBlockPos(context,"pos");
@@ -89,6 +93,7 @@ public class TongueCommand {
 
             TongueTip tip = TongueTip.factory(world,tongueEntity);
             tongueEntity.finish();
+
 
             world.spawnEntity(tongueEntity);
             world.spawnEntity(tip);
@@ -148,8 +153,7 @@ public class TongueCommand {
                 tongueEntity.blockTarget = blockHitResult.getBlockPos();
                 return blockHitResult.getPos();
             } else {
-                 tongueEntity.setTargetMode(TargetTypes.AIR);
-                return lookVector.multiply(Tongue.TONGUE_LENGTH).add(startPos);
+                return Vec3d.ZERO;
             }
         }
     }
@@ -164,12 +168,10 @@ public class TongueCommand {
                             .executes(context -> commandLogic(context,true,true))
                     .then(
                             CommandManager.argument("entity",EntityArgumentType.entity())
-                                    .executes(context -> commandLogic(context,false, true))
-                                    .then(
-                                    CommandManager.argument("pos",BlockPosArgumentType.blockPos())
-                                            .executes(context -> commandLogic(context,false,false)
-                                            )
-                            )
+                                .executes(context -> commandLogic(context,false, true)).then(
+                            CommandManager.argument("pos",BlockPosArgumentType.blockPos())
+                                .executes(context -> commandLogic(context,false,false)
+                            ))
                     )
             );
         });
