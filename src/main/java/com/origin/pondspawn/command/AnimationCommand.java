@@ -34,7 +34,7 @@ public class AnimationCommand {
                 ) -> {
             dispatcher.register(CommandManager.literal("animation").then(
                         CommandManager.argument("percent", FloatArgumentType.floatArg(0f,1f))
-                                .requires(source -> source.hasPermissionLevel(2))
+                                .requires(source -> source.hasPermissionLevel(Common.command_permission))
                                 .executes(AnimationCommand::commandLogic)
                     )
             );

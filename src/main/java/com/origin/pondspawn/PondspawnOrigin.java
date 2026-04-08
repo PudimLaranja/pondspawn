@@ -9,7 +9,9 @@ import com.origin.pondspawn.weightSystem.WeightManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -61,8 +63,15 @@ public class PondspawnOrigin implements ModInitializer {
                 });
             }
         });
-        LOGGER.info("Loaded:]");
 
+        ServerPlayConnectionEvents.DISCONNECT.register(((handler, server) -> {
+            PlayerEntity player = handler.getPlayer();
+            PlayerWithTongueData tongueData = (PlayerWithTongueData) player;
+
+            tongueData.pondspawn$getTongueEntity().kill();
+            tongueData.pondspawn$getScarfEntity().kill();
+        }));
+        LOGGER.info("Loaded:]");
 	}
 
     public static Identifier id(String path) {

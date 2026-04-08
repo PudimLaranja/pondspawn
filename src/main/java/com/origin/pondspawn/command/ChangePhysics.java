@@ -1,21 +1,14 @@
 package com.origin.pondspawn.command;
 
 import com.mojang.brigadier.arguments.DoubleArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
-import com.origin.pondspawn.command.enums.PhysicsConstants;
 import com.origin.pondspawn.globalconfig.PlayerPhysicsConfig;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.minecraft.command.CommandSource;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
-
-import java.util.Arrays;
 
 public class ChangePhysics {
 
@@ -51,7 +44,7 @@ public class ChangePhysics {
                 environment
         ) -> {
             dispatcher.register(CommandManager.literal("changePhysics")
-                    .requires(source -> source.hasPermissionLevel(2))
+                    .requires(source -> source.hasPermissionLevel(Common.command_permission))
                 .then(
                         CommandManager.literal("reset")
                                 .executes(ChangePhysics::reset)

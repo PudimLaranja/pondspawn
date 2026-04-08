@@ -48,7 +48,7 @@ public class ClearTongue {
                 environment
         ) -> {
             dispatcher.register(CommandManager.literal("clearTongue")
-                    .requires(source -> source.hasPermissionLevel(2))
+                    .requires(source -> source.hasPermissionLevel(Common.command_permission))
                             .executes(context -> commandLogic(context,true))
                     .then(
                             CommandManager.argument("entity", EntityArgumentType.entity())

@@ -1,0 +1,61 @@
+{
+  "type": "origins:multiple",
+  "prevent_non_meat": {
+    "type": "origins:prevent_item_use",
+    "item_condition": {
+      "type": "origins:all_of",
+      "conditions": [
+        {
+          "type": "origins:food"
+        },
+        {
+          "type": "origins:or",
+          "conditions": [
+            {
+              "type": "origins:ingredient",
+              "ingredient": { "item": "minecraft:honey_bottle" }
+            },
+            {
+              "type": "origins:ingredient",
+              "ingredient": { "item": "minecraft:potion" }
+            },
+            {
+              "type": "origins:ingredient",
+              "ingredient": { "tag": "origins:meat" }
+            },
+            {
+              "type": "origins:ingredient",
+              "ingredient": { "tag": "origins:ignore_diet" }
+            }
+          ],
+          "inverted": true
+        }
+      ]
+    }
+  },
+  "no_honey_nutrition": {
+    "type": "origins:modify_food",
+    "item_condition": {
+      "type": "origins:or",
+      "conditions": [
+        {
+          "type": "origins:ingredient",
+          "ingredient": { "item": "minecraft:honey_bottle" }
+        },
+        {
+          "type": "origins:ingredient",
+          "ingredient": { "item": "minecraft:potion" }
+        }
+      ]
+    },
+    "food_modifier": {
+      "operation": "addition",
+      "value": -20
+    },
+    "saturation_modifier": {
+      "operation": "addition",
+      "value": -20
+    },
+    "always_edible": true
+  }
+}

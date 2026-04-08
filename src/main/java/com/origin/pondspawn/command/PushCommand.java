@@ -1,15 +1,12 @@
 package com.origin.pondspawn.command;
 
 import com.mojang.brigadier.arguments.DoubleArgumentType;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +56,7 @@ public class PushCommand {
                 envioronment
         ) -> {
             dispatcher.register(CommandManager.literal("push")
-                    .requires(source -> source.hasPermissionLevel(2))
+                    .requires(source -> source.hasPermissionLevel(Common.command_permission))
                     .then(
                             CommandManager.argument("force", DoubleArgumentType.doubleArg()).then(
                             CommandManager.argument("dirX",DoubleArgumentType.doubleArg(-1,1)).then(

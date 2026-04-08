@@ -5,36 +5,28 @@ import com.origin.pondspawn.command.ClearTongue;
 import com.origin.pondspawn.entity.enums.TargetTypes;
 import com.origin.pondspawn.entity.enums.TongueModes;
 import com.origin.pondspawn.util.ModUtil;
-import net.fabricmc.fabric.api.block.v1.BlockFunctionalityTags;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.brain.MemoryQuery;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
-import oshi.util.Util;
 
 import java.util.*;
 
@@ -141,6 +133,10 @@ public class Tongue extends Entity {
     public void tick() {
         if (!initialized) return;
         super.tick();
+
+        if (!(ModUtil.getEntityByUUID(this.getWorld(),getEntityTarget()) instanceof PlayerEntity player)) {
+            this.kill();
+        }
 
         this.retractHandler();
         this.extendHandler();

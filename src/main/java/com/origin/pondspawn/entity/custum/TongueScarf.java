@@ -1,6 +1,5 @@
 package com.origin.pondspawn.entity.custum;
 
-import com.origin.pondspawn.PondspawnOrigin;
 import com.origin.pondspawn.init.ModEntityTypes;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.origin.Origin;
@@ -62,8 +61,15 @@ public class TongueScarf extends Entity{
                 this.kill();
 
             }
-
+        } else {
+            this.kill();
         }
+    }
+
+    @Override
+    public void kill() {
+        this.getPassengerList().forEach(Entity::kill);
+        super.kill();
     }
 
     @Override

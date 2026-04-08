@@ -166,7 +166,7 @@ public class TongueCommand {
                 environment
         ) -> {
             dispatcher.register(CommandManager.literal("tongue")
-                    .requires(source -> source.hasPermissionLevel(2))
+                    .requires(source -> source.hasPermissionLevel(Common.command_permission))
                             .executes(context -> commandLogic(context,true,true))
                     .then(
                             CommandManager.argument("entity",EntityArgumentType.entity())

@@ -172,6 +172,7 @@ public class PlayerWithTongueEntityMixin implements PlayerWithTongueData {
         return fallDistance;
     }
 
+
     @Inject(method = "damage",at = @At("HEAD"))
     private void onTakeDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         ClearTongue.killTongue((PlayerEntity) (Object) this);

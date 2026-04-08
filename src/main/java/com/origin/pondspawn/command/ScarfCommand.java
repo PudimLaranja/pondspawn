@@ -1,7 +1,6 @@
 package com.origin.pondspawn.command;
 
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.datafixers.TypeRewriteRule;
 import com.origin.pondspawn.PlayerWithTongueData;
 import com.origin.pondspawn.entity.custum.TongueScarf;
 import com.origin.pondspawn.entity.custum.TongueScarfMouth;
@@ -12,7 +11,6 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.world.World;
 
-import java.util.Objects;
 
 public class ScarfCommand {
 
@@ -100,7 +98,7 @@ public class ScarfCommand {
                 envioronment
                 ) -> {
             dispatcher.register(CommandManager.literal("scarf")
-                    .requires(source -> source.hasPermissionLevel(2))
+                    .requires(source -> source.hasPermissionLevel(Common.command_permission))
                     .then(CommandManager.literal("toggle").executes(ScarfCommand::toggle))
                     .then(CommandManager.literal("spawn").executes(ScarfCommand::spawn))
                     .then(CommandManager.literal("kill").executes(ScarfCommand::kill))

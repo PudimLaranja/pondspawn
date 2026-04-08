@@ -14,5 +14,6 @@ public class ModCommands {
         TongueJumpCommand.register();
         ScarfCommand.register();
         PushCommand.register();
+        ClearPondspawnCommand.register();
     }
 }

@@ -3,15 +3,12 @@ package com.origin.pondspawn.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.origin.pondspawn.PlayerWithTongueData;
-import com.origin.pondspawn.entity.custum.Tongue;
 import com.origin.pondspawn.globalconfig.PlayerPhysicsConfig;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 
 public class TongueJumpCommand {
@@ -40,7 +37,7 @@ public class TongueJumpCommand {
                 environment
         ) -> {
             dispatcher.register(CommandManager.literal("tongueJump")
-                    .requires(source -> source.hasPermissionLevel(2))
+                    .requires(source -> source.hasPermissionLevel(Common.command_permission))
                     .executes(TongueJumpCommand::commandLogic)
 
             );
