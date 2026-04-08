@@ -40,6 +40,7 @@ public class TongueJumpCommand {
                 environment
         ) -> {
             dispatcher.register(CommandManager.literal("tongueJump")
+                    .requires(source -> source.hasPermissionLevel(2))
                     .executes(TongueJumpCommand::commandLogic)
 
             );

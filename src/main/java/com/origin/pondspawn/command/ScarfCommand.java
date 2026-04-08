@@ -100,6 +100,7 @@ public class ScarfCommand {
                 envioronment
                 ) -> {
             dispatcher.register(CommandManager.literal("scarf")
+                    .requires(source -> source.hasPermissionLevel(2))
                     .then(CommandManager.literal("toggle").executes(ScarfCommand::toggle))
                     .then(CommandManager.literal("spawn").executes(ScarfCommand::spawn))
                     .then(CommandManager.literal("kill").executes(ScarfCommand::kill))

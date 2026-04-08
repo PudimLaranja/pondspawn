@@ -73,15 +73,25 @@
       "key": "key.origins.secondary_active",
       "continuous": false
     }
+
+
   },
 
-  "name": "Tongue Pull",
-  "description": "If you press secondary instead you will launch your stick tongue and pull yourself towards it, if you are heavier that the entity you are pulling you are pull itself towards you instead.\nYou can also press shift to loose your tongue in this mode",
+  "name": "§e§nTongue Pull",
+  "description": "Launch your stick tongue and pull yourself towards it, if you are heavier that the entity you are pulling you are going to pull itself towards you instead.",
+
+
   "badges": [
     {
-      "type": "origins:sprite",
-      "sprite": "minecraft:textures/block/lily_pad.png",
-      "permission_level": 4
+      "type": "origins:tooltip",
+      "sprite": "origins:textures/gui/badge/active.png",
+      "text": "Press and hold secondary while looking at a block or entity to activate;"
+    },
+    {
+      "type": "origins:tooltip",
+      "sprite": "origins:textures/gui/badge/info.png",
+      "text": "Hold shift to loose the tongue while pulling yourself."
     }
   ]
+
 }

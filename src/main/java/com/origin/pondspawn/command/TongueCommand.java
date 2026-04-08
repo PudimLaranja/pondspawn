@@ -66,6 +66,7 @@ public class TongueCommand {
                 position = getRaycastPos(player,tongueEntity,world);
                 if (position == Vec3d.ZERO) {
                     ((PlayerWithTongueData) player).pondspawn$setTongueOut(false);
+                    return 0;
                 } else {
                     ((PlayerWithTongueData) player).pondspawn$setTongueOut(true);
                 }
@@ -165,6 +166,7 @@ public class TongueCommand {
                 environment
         ) -> {
             dispatcher.register(CommandManager.literal("tongue")
+                    .requires(source -> source.hasPermissionLevel(2))
                             .executes(context -> commandLogic(context,true,true))
                     .then(
                             CommandManager.argument("entity",EntityArgumentType.entity())

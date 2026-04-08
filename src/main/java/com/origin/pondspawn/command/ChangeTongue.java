@@ -53,6 +53,7 @@ public class ChangeTongue {
                 environment
         ) -> {
             dispatcher.register(CommandManager.literal("changeTongue")
+                    .requires(source -> source.hasPermissionLevel(2))
                     .then(
                             CommandManager.argument("entity", EntityArgumentType.entity()).then(
                             CommandManager.argument("mode", StringArgumentType.word())

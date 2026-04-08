@@ -59,6 +59,7 @@ public class PushCommand {
                 envioronment
         ) -> {
             dispatcher.register(CommandManager.literal("push")
+                    .requires(source -> source.hasPermissionLevel(2))
                     .then(
                             CommandManager.argument("force", DoubleArgumentType.doubleArg()).then(
                             CommandManager.argument("dirX",DoubleArgumentType.doubleArg(-1,1)).then(

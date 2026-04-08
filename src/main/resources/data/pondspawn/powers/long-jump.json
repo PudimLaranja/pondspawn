@@ -1,8 +1,16 @@
 {
   "type": "origins:multiple",
 
-  "name": "Long jump",
-  "description": "",
+  "name": "§e§nLong jump",
+  "description": "Using your froggy legs you can reach higher distances!",
+
+  "badges": [
+    {
+      "type": "origins:tooltip",
+      "sprite": "origins:textures/gui/badge/active.png",
+      "text": "Crouch, walk forwards and then release crouch to activate"
+    }
+  ],
 
   "shift-pressed": {
     "type": "origins:resource",
@@ -44,7 +52,10 @@
           },
           {
             "type": "pondspawn:execute_commands",
-            "commands": "push 2.5 0 0.2 0.8"
+            "commands": [
+              "push 2.5 0 0.2 0.8",
+              "playsound minecraft:entity.player.splash.high_speed ambient @s ~ ~ ~ 1 1.4"
+            ]
           },
           {
             "type": "origins:change_resource",

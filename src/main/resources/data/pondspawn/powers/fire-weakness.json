@@ -3,7 +3,7 @@
   "cooldown": 1,
   "modifier": {
     "operation": "multiply_total_multiplicative",
-    "amount": 1.5
+    "amount": 2
   },
   "damage_condition": {
     "type": "origins:any_of",
@@ -39,6 +39,6 @@
     ]
   },
 
-  "name": "Skin Carbonization",
-  "description": "Fire deeply hurt your skin and you.\nYou take 1.5x fire damage."
+  "name": "§c§nSkin Carbonization",
+  "description": "Fire deeply hurts your skin and you.\nYou take 1.5x fire damage."
 }

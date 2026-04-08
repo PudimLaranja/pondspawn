@@ -1,7 +1,7 @@
 {
   "type": "origins:multiple",
 
-  "name": "Tongue scarf",
+  "name": "§e§nTongue scarf",
   "description": "You can wrap yourself with your tongue to make a fashionable scarf.\nWhen you are wearing your tongue scarf you become faster but also more vulnerable",
 
   "scarf-toggle": {
@@ -10,14 +10,21 @@
       "type": "origins:execute_command",
       "command": "scarf toggle"
     },
-    "condition": {"type": "origins:sneaking"}
+    "condition": {"type": "origins:sneaking"},
+    "badges": [
+      {
+        "type": "origins:keybind",
+        "sprite": "origins:textures/gui/badge/toggle.png",
+        "text": "Shift and press %s to toggle"
+      }
+    ]
   },
 
   "fragile": {
     "type": "origins:modify_damage_taken",
     "modifier": {
       "operation": "multiply_total_multiplicative",
-      "amount": 1.5
+      "amount": 2
     },
     "condition": {"type": "pondspawn:wearing_tongue_scarf"}
   },
@@ -31,4 +38,5 @@
     },
     "condition": {"type": "pondspawn:wearing_tongue_scarf"}
   }
+
 }

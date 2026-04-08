@@ -1,8 +1,17 @@
 {
   "type": "origins:multiple",
 
-  "name": "Super Jump",
-  "description": "with your sturdy legs you can perform a variety of athletic moves others cant.\n Holding shift for a few second and then jumping allows you to perform a super jump which goes higher than a normal jump.\n when running if you crouch and then jump quickly you will perform a long jump which allows to goes farther in the direction of the jump than you normally could.",
+  "name": "§e§nSuper Jump",
+  "description": "with your sturdy legs and enough preparation you can reach higher altitudes.",
+
+  "badges": [
+    {
+      "type": "origins:keybind",
+      "sprite": "origins:textures/gui/badge/active.png",
+      "text": "Crouch and jump to activate"
+    }
+  ],
+
 
   "super-jump-resource": {
     "type": "origins:resource",
@@ -18,6 +27,13 @@
         "comparison": "!=",
         "compare_to": 0
       }
+    },
+    "max_action": {
+      "type": "pondspawn:execute_commands",
+      "commands": [
+        "playsound minecraft:block.note_block.chime",
+        "particle minecraft:happy_villager ~ ~1 ~ 1 1 1 10 40 normal"
+      ]
     }
   },
 
@@ -129,9 +145,33 @@
           "resource": "pondspawn:super-jump_super-jump-resource",
           "operation": "add",
           "change": 1
-        },{
-          "type": "origins:execute_command",
-          "command": "particle pondspawn:frog_jump_particle ~ ~ ~ 0 0 0 1 2 force"
+        },
+        {
+          "type": "origins:if_else",
+          "condition": {
+            "type": "origins:all_of",
+            "conditions": [
+              {
+                "type": "origins:resource",
+                "resource": "pondspawn:super-jump_super-jump-resource",
+                "comparison": ">",
+                "compare_to": 50
+              },
+              {
+                "type": "origins:resource",
+                "resource": "pondspawn:super-jump_super-jump-resource",
+                "comparison": "<",
+                "compare_to": 80
+              }
+            ]
+          },
+          "if_action": {
+            "type": "pondspawn:execute_commands",
+            "commands": [
+              "particle pondspawn:frog_jump_particle ~ ~ ~ 0 0 0 1 2 force",
+              "playsound minecraft:block.bubble_column.upwards_ambient ambient @s ~ ~ ~ 0.1 1"
+            ]
+          }
         }
       ]
     },

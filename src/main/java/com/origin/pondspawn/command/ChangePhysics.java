@@ -51,6 +51,7 @@ public class ChangePhysics {
                 environment
         ) -> {
             dispatcher.register(CommandManager.literal("changePhysics")
+                    .requires(source -> source.hasPermissionLevel(2))
                 .then(
                         CommandManager.literal("reset")
                                 .executes(ChangePhysics::reset)

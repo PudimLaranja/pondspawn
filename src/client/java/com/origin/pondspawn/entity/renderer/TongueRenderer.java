@@ -98,7 +98,7 @@ public class TongueRenderer extends EntityRenderer<Tongue> {
                     if (
                         client.player instanceof ClientPlayerEntity clientPlayer &&
                         clientPlayer.getUuid() == player.getUuid() &&
-                        client.options.getPerspective().isFirstPerson() && false
+                        client.options.getPerspective().isFirstPerson()
                     ) {
                         Vec3d mouthPosition = Common.getPlayerMouthPosition(player,tickDelta);
                         Vec3d dir = entityPos.subtract(mouthPosition).normalize();
