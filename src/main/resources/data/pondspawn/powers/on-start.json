@@ -1,0 +1,12 @@
+{
+  "type": "origins:action_on_callback",
+  "entity_action_chosen": {
+    "type": "pondspawn:execute_commands",
+    "commands": [
+      "resource set @s pondspawn:moisture 2500",
+      "resource set @s pondspawn:bar-effect_resource 0",
+      "resource set @s pondspawn:bar-effect_resource 0"
+    ]
+  },
+  "execute_chosen_when_orb": true
+}

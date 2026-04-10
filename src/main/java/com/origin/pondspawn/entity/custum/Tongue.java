@@ -72,7 +72,6 @@ public class Tongue extends Entity {
     public Tongue(EntityType<?> type, World world) {
         super(type, world);
 
-
         this.ignoreCameraFrustum = true;
 
     }
@@ -140,6 +139,10 @@ public class Tongue extends Entity {
 
         this.retractHandler();
         this.extendHandler();
+
+        if (ModUtil.getEntityByUUID(this.getWorld(),getEntityTarget()) instanceof PlayerEntity player) {
+            if (this.getPos().distanceTo(player.getPos()) > TONGUE_LENGTH + 3) this.kill();
+        }
 
         switch (this.getTargetMode()) {
             case BLOCK -> this.checkBlock();
