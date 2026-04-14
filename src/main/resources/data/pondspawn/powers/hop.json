@@ -1,0 +1,28 @@
+{
+  "type": "origins:multiple",
+  "hidden": true,
+
+  "faster": {
+    "type": "origins:modify_air_speed",
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "amount": 1.3
+    }
+  },
+
+  "fast": {
+    "type": "origins:modify_air_speed",
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "amount": 1.1
+    }
+  },
+
+  "slow" : {
+    "type": "origins:modify_air_speed",
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "amount": 0.01
+    }
+  }
+}

@@ -5,7 +5,10 @@
     "commands": [
       "resource set @s pondspawn:moisture 2500",
       "resource set @s pondspawn:bar-effect_resource 0",
-      "resource set @s pondspawn:bar-effect_resource 0"
+      "resource set @s pondspawn:bar-effect_resource 0",
+      "power revoke @s pondspawn:hop_slow",
+      "power revoke @s pondspawn:hop_faster",
+      "power revoke @s pondspawn:hop_fast"
     ]
   },
   "execute_chosen_when_orb": true

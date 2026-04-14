@@ -1,10 +1,6 @@
 {
   "type": "origins:multiple",
 
-  "on-start": {
-
-  },
-
   "moisture-process": {
     "type": "origins:action_over_time",
     "interval": 10,

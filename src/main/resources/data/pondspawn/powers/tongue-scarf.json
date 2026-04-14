@@ -4,6 +4,14 @@
   "name": "§e§nTongue scarf",
   "description": "You can wrap yourself with your tongue to make a fashionable scarf.\nWhen you are wearing your tongue scarf you become faster but also more vulnerable",
 
+  "badges": [
+    {
+      "type": "origins:tooltip",
+      "sprite": "origins:textures/gui/badge/toggle.png",
+      "text": "Shift and press primary to toggle the scarf"
+    }
+  ],
+
   "scarf-toggle": {
     "type": "origins:active_self",
     "entity_action": {

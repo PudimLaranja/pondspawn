@@ -40,5 +40,13 @@
   },
 
   "name": "§c§nSkin Carbonization",
-  "description": "Fire deeply hurts your skin and you.\nYou take 1.5x fire damage."
+  "description": "Fire deeply hurts your skin and you.",
+  "badges": [
+    {
+      "type": "origins:tooltip",
+      "sprite": "origins:textures/gui/badge/info.png",
+      "text": "You receive double the damage from fire sources."
+    }
+  ]
+
 }

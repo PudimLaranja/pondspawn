@@ -1,17 +1,86 @@
 {
   "type": "origins:multiple",
 
+  "on-start": {
+    "type": "origins:action_on_callback",
+    "entity_action_gained": {
+      "type": "origins:execute_command",
+      "command": "power grant @s pondspawn:hop_fast"
+    }
+  },
+
   "sluggish-walk": {
     "type": "origins:attribute",
     "modifier": {
       "id": "frog-waddle",
       "attribute": "minecraft:generic.movement_speed",
       "operation": "add_value",
-      "amount": -0.04
+      "amount": -0.05
     },
     "condition": {
       "type": "origins:nbt",
       "nbt": "{OnGround:1b}"
+    }
+  },
+
+  "speed_update": {
+    "type": "origins:action_over_time",
+    "interval": 3,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "pondspawn:wearing_tongue_scarf"
+      },
+      "if_action": {
+        "type": "origins:if_else",
+        "condition": {
+          "type": "origins:resource",
+          "resource": "pondspawn:moisture",
+          "comparison": ">",
+          "compare_to": 1250
+        },
+        "if_action": {
+          "type": "pondspawn:execute_commands",
+          "commands": [
+            "power revoke @s pondspawn:hop_fast",
+            "power revoke @s pondspawn:hop_slow",
+            "power grant @s pondspawn:hop_faster"
+          ]
+        },
+        "else_action": {
+          "type": "pondspawn:execute_commands",
+          "commands": [
+            "power revoke @s pondspawn:hop_slow",
+            "power revoke @s pondspawn:hop_faster",
+            "power grant @s pondspawn:hop_fast"
+          ]
+        }
+      },
+      "else_action":{
+          "type": "origins:if_else",
+          "condition": {
+            "type": "origins:resource",
+            "resource": "pondspawn:moisture",
+            "comparison": ">",
+            "compare_to": 1250
+          },
+          "if_action": {
+            "type": "pondspawn:execute_commands",
+            "commands": [
+              "power revoke @s pondspawn:hop_slow",
+              "power revoke @s pondspawn:hop_faster",
+              "power grant @s pondspawn:hop_fast"
+            ]
+          },
+          "else_action": {
+            "type": "pondspawn:execute_commands",
+            "commands": [
+              "power revoke @s pondspawn:hop_fast",
+              "power revoke @s pondspawn:hop_faster",
+              "power grant @s pondspawn:hop_slow"
+            ]
+          }
+      }
     }
   },
 
@@ -24,13 +93,6 @@
     }
   },
 
-  "fast-hop": {
-    "type": "origins:modify_air_speed",
-    "modifier": {
-      "operation": "multiply_total_multiplicative",
-      "amount": 1.1
-    }
-  },
 
   "high-jump": {
     "type": "origins:modify_jump",
